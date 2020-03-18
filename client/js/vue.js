@@ -4,6 +4,7 @@ const constants = require("./constants");
 
 import "../css/style.css";
 import Vue from "vue";
+import VueAsyncComputed from "vue-async-computed";
 import store from "./store";
 import App from "../components/App.vue";
 import storage from "./localStorage";
@@ -17,6 +18,8 @@ import "./keybinds";
 const favicon = document.getElementById("favicon");
 const faviconNormal = favicon.getAttribute("href");
 const faviconAlerted = favicon.dataset.other;
+
+Vue.use(VueAsyncComputed);
 
 const vueApp = new Vue({
 	el: "#viewport",
