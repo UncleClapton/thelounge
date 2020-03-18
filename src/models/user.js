@@ -4,12 +4,15 @@ const _ = require("lodash");
 
 module.exports = User;
 
-function User(attr, prefixLookup) {
+function User(attr, prefixLookup = {}) {
+	console.log("NEW-USER", attr);
 	_.defaults(this, attr, {
 		modes: [],
 		away: "",
 		mode: "",
 		nick: "",
+		ident: "",
+		hostname: "",
 		lastMessage: 0,
 	});
 
@@ -27,6 +30,8 @@ User.prototype.toJSON = function() {
 	return {
 		nick: this.nick,
 		mode: this.mode,
+		ident: this.ident,
+		hostname: this.hostname,
 		lastMessage: this.lastMessage,
 	};
 };
