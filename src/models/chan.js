@@ -150,8 +150,8 @@ Chan.prototype.findUser = function(nick) {
 	return this.users.get(nick.toLowerCase());
 };
 
-Chan.prototype.getUser = function(nick) {
-	return this.findUser(nick) || new User({nick});
+Chan.prototype.getUser = function(nick, userAttr = {}) {
+	return this.findUser(nick) || new User({nick, ...userAttr});
 };
 
 Chan.prototype.setUser = function(user) {
