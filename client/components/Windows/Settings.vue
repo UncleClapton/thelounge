@@ -151,16 +151,38 @@
 					Hide all status messages
 				</label>
 			</div>
-			<h2>Visual Aids</h2>
-			<div>
+			<h2 id="label-colored-nicks">Nick Colors</h2>
+			<div aria-labelledby="label-colored-nicks" role="group">
 				<label class="opt">
 					<input
-						:checked="$store.state.settings.coloredNicks"
-						type="checkbox"
+						:checked="['off', false].includes($store.state.settings.coloredNicks)"
+						type="radio"
 						name="coloredNicks"
+						value="off"
 					/>
-					Enable colored nicknames
+					Do not color nicks
 				</label>
+				<label class="opt">
+					<input
+						:checked="['hash', true].includes($store.state.settings.coloredNicks)"
+						type="radio"
+						name="coloredNicks"
+						value="hash"
+					/>
+					Calculate color from nickname
+				</label>
+				<label class="opt">
+					<input
+						:checked="$store.state.settings.coloredNicks === 'regex'"
+						type="radio"
+						name="coloredNicks"
+						value="regex"
+					/>
+					Set nick colors by matching rules (regex)
+				</label>
+			</div>
+			<h2>Visual Aids</h2>
+			<div>
 				<label class="opt">
 					<input
 						:checked="$store.state.settings.autocomplete"
