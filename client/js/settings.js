@@ -27,7 +27,10 @@ export const config = normalizeConfig({
 		default: "",
 	},
 	coloredNicks: {
-		default: true,
+		default: "hash",
+	},
+	nickColorRules: {
+		default: [],
 	},
 	desktopNotifications: {
 		default: false,
