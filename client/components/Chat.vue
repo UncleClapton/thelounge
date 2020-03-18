@@ -4,7 +4,9 @@
 			id="chat"
 			:class="{
 				'hide-motd': !$store.state.settings.motd,
-				'colored-nicks': $store.state.settings.coloredNicks,
+				'colored-nicks': ['hash', 'regex', true].includes(
+					$store.state.settings.coloredNicks
+				),
 				'time-seconds': $store.state.settings.showSeconds,
 				'time-12h': $store.state.settings.use12hClock,
 			}"
