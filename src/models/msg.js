@@ -8,10 +8,10 @@ class Msg {
 		if (attr) {
 			["from", "target"].forEach((prop) => {
 				if (attr[prop]) {
-					this[prop] = {
-						mode: attr[prop].mode,
-						nick: attr[prop].nick,
-					};
+					this[prop] = Object.assign(
+						Object.create(Object.getPrototypeOf(attr[prop])),
+						attr[prop]
+					);
 				}
 			});
 		}
