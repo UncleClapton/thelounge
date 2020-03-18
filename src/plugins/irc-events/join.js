@@ -36,7 +36,13 @@ module.exports = function(irc, network) {
 			});
 		}
 
-		const user = new User({nick: data.nick});
+		const userData = {
+			nick: data.nick,
+			ident: data.ident,
+			hostname: data.hostname,
+		};
+
+		const user = new User(userData);
 		const msg = new Msg({
 			time: data.time,
 			from: user,
@@ -46,7 +52,7 @@ module.exports = function(irc, network) {
 		});
 		chan.pushMessage(client, msg);
 
-		chan.setUser(new User({nick: data.nick}));
+		chan.setUser(new User(userData));
 		client.emit("users", {
 			chan: chan.id,
 		});
