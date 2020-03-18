@@ -77,7 +77,7 @@ module.exports = function(irc, network) {
 				const msg = new Msg({
 					type: Msg.Type.CTCP_REQUEST,
 					time: data.time,
-					from: new User({nick: data.nick}),
+					from: new User({nick: data.nick, ident: data.ident, hostname: data.hostname}),
 					hostmask: data.ident + "@" + data.hostname,
 					ctcpMessage: data.message,
 				});
