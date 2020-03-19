@@ -10,6 +10,7 @@ Vue.use(VueRouter);
 import SignIn from "../components/Windows/SignIn.vue";
 import Connect from "../components/Windows/Connect.vue";
 import Settings from "../components/Windows/Settings.vue";
+import NickColorSettings from "../components/Windows/NickColorSettings.vue";
 import Help from "../components/Windows/Help.vue";
 import Changelog from "../components/Windows/Changelog.vue";
 import NetworkEdit from "../components/Windows/NetworkEdit.vue";
@@ -103,6 +104,11 @@ function initialize() {
 			name: "Settings",
 			path: "/settings",
 			component: Settings,
+		},
+		{
+			name: "NickColorSettings",
+			path: "/settings/nick-colors",
+			component: NickColorSettings,
 		},
 		{
 			name: "Help",

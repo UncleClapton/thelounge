@@ -30,7 +30,10 @@ export const config = normalizeConfig({
 		default: "hash",
 	},
 	nickColorRules: {
-		default: [],
+		default: {},
+	},
+	defaultNickColor: {
+		default: "1",
 	},
 	desktopNotifications: {
 		default: false,

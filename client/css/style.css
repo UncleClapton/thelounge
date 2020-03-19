@@ -252,6 +252,64 @@ p {
 	touch-action: pan-y;
 }
 
+.container.wide {
+	width: 80%;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.float-right {
+	float: right;
+}
+
+.nick-color-rule {
+	display: flex;
+	flex-direction: row;
+}
+
+.nick-color-rule .handle {
+	display: flex;
+	align-items: center;
+	margin: 6px 10px 6px 2px;
+}
+
+.nick-color-rule.default {
+	margin-left: 27px;
+	margin-right: 85.28px;
+}
+
+.nick-color-rule > .button,
+.nick-color-rule > .input,
+.nick-color-rule > .label,
+.nick-color-rule > #chat {
+	flex: 1 1 auto;
+	margin: 6px 0;
+	height: 35px;
+}
+
+.nick-color-rule > .label {
+	width: 100%;
+	margin: 6px 0;
+	padding: 0 10px;
+	align-self: center;
+	font-size: 14px;
+}
+
+.nick-color-rule > .nick-color-picker {
+	margin: 6px 15px 6px;
+}
+
+.input.nick-color-picker {
+	background: var(--window-bg-color);
+	border-width: 2px;
+}
+
+.input.nick-color-picker > option {
+	background-color: var(--window-bg-color);
+}
+
 #js-copy-hack,
 #loading pre,
 #help .container,
@@ -326,6 +384,9 @@ p {
 .channel-list-item .not-connected-icon::before,
 .channel-list-item .parted-channel-icon::before,
 .jump-to-input::before,
+.button.close::before,
+.nick-color-settings-link .icon::before,
+.icon.handle::before,
 #sidebar .collapse-network-icon::before {
 	font: normal normal normal 14px/1 FontAwesome;
 	font-size: inherit; /* Can't have font-size inherit on line above, so need to override */
@@ -333,13 +394,16 @@ p {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-#viewport .lt::before { content: "\f0c9"; /* http://fontawesome.io/icon/bars/ */ }
+.icon.handle::before,
+#viewport .lt::before {
+	content: "\f0c9"; /* http://fontawesome.io/icon/bars/ */
+}
+
 #viewport .rt::before { content: "\f0c0"; /* https://fontawesome.com/icons/users?style=solid */ }
 #chat button.menu::before { content: "\f142"; /* http://fontawesome.io/icon/ellipsis-v/ */ }
 
 .context-menu-join::before { content: "\f067"; /* http://fontawesome.io/icon/plus/ */ }
 .context-menu-user::before { content: "\f007"; /* http://fontawesome.io/icon/user/ */ }
-.context-menu-close::before { content: "\f00d"; /* http://fontawesome.io/icon/times/ */ }
 .context-menu-list::before { content: "\f03a"; /* http://fontawesome.io/icon/list/ */ }
 .context-menu-disconnect::before { content: "\f127"; /* https://fontawesome.com/icons/unlink?style=solid */ }
 .context-menu-connect::before { content: "\f0c1"; /* https://fontawesome.com/icons/link?style=solid */ }
@@ -350,6 +414,11 @@ p {
 .context-menu-network::before { content: "\f233"; /* https://fontawesome.com/icons/server?style=solid */ }
 .context-menu-edit::before { content: "\f303"; /* https://fontawesome.com/icons/pencil-alt?style=solid */ }
 .context-menu-clear-history::before { content: "\f1f8"; /* https://fontawesome.com/icons/trash?style=solid */ }
+
+.context-menu-close::before,
+.button.close::before {
+	content: "\f00d"; /* http://fontawesome.io/icon/times/ */
+}
 
 .channel-list-item .not-secure-icon::before {
 	content: "\f071"; /* https://fontawesome.com/icons/exclamation-triangle?style=solid */
@@ -372,6 +441,8 @@ p {
 .channel-list-item.has-draft:not(.active):not([data-type="lobby"])::before { content: "\f304"; /* https://fontawesome.com/icons/pen?style=solid */ }
 
 #footer .connect::before { content: "\f067"; /* http://fontawesome.io/icon/plus/ */ }
+
+.nick-color-settings-link .icon::before,
 #footer .settings::before { content: "\f013"; /* http://fontawesome.io/icon/cog/ */ }
 #footer .help::before { content: "\f059"; /* http://fontawesome.io/icon/question/ */ }
 
@@ -560,6 +631,7 @@ p {
 	opacity: 0.6;
 }
 
+.header .button.close,
 #viewport .lt,
 #viewport .rt,
 #chat button.menu {
@@ -573,11 +645,17 @@ p {
 	flex-shrink: 0;
 }
 
+.header .button.close::before,
 #viewport .lt::before,
 #viewport .rt::before,
 #chat button.menu::before {
 	width: 36px;
 	line-height: 36px; /* Fix alignment in Microsoft Edge */
+}
+
+.header .button.close {
+	position: absolute;
+	right: 6px;
 }
 
 /* Channel list button stays fixed when scrolling... */
@@ -693,8 +771,7 @@ background on hover (unless active) */
 }
 
 .ui-sortable-ghost::after {
-	background: var(--body-bg-color);
-	border: 1px dashed #99a2b4;
+	border: 2px dashed #99a2b4;
 	border-radius: 6px;
 	content: " ";
 	display: block;
@@ -703,6 +780,10 @@ background on hover (unless active) */
 	top: 0;
 	bottom: 0;
 	right: 10px;
+}
+
+.ui-sortable-ghost > * {
+	opacity: 0;
 }
 
 #sidebar .network {
@@ -1919,6 +2000,11 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 #settings .error {
 	color: #e74c3c;
 	margin-top: 0.2em;
+}
+
+#settings .nick-color-settings-link {
+	float: right;
+	font-size: 1.5em;
 }
 
 .password-container {

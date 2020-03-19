@@ -178,9 +178,25 @@
 						name="coloredNicks"
 						value="regex"
 					/>
-					Set nick colors by matching rules (regex)
+					Set nick colors by matching rules
+
+					<span
+						v-if="$store.state.settings.coloredNicks === 'regex'"
+						class="tooltipped tooltipped-n tooltipped-no-touch nick-color-settings-link"
+						aria-label="Color Settings"
+					>
+						<router-link
+							to="/settings/nick-colors"
+							tag="button"
+							class="icon"
+							aria-label="Color Settings"
+							role="tab"
+							aria-controls="settings"
+						/>
+					</span>
 				</label>
 			</div>
+
 			<h2>Visual Aids</h2>
 			<div>
 				<label class="opt">
