@@ -108,7 +108,7 @@ module.exports = function(irc, network) {
 			self: self,
 			from: from,
 			highlight: highlight,
-			users: [],
+			users: {},
 		});
 
 		if (showInActive) {
@@ -129,8 +129,10 @@ module.exports = function(irc, network) {
 		let match;
 
 		while ((match = nickRegExp.exec(data.message))) {
-			if (chan.findUser(match[1])) {
-				msg.users.push(match[1]);
+			const user = chan.findUser(match[1]);
+
+			if (user) {
+				msg.users[match[1]] = user;
 			}
 		}
 

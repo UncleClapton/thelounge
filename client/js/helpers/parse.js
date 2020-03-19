@@ -179,14 +179,12 @@ function parse(createElement, text, message = undefined, network = undefined) {
 				},
 				fragments
 			);
-		} else if (textPart.nick) {
+		} else if (textPart.user) {
 			return createElement(
 				Username,
 				{
 					props: {
-						user: {
-							nick: textPart.nick,
-						},
+						user: textPart.user,
 					},
 					attrs: {
 						dir: "auto",
