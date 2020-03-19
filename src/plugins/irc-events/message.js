@@ -92,11 +92,24 @@ module.exports = function(irc, network) {
 
 			from = chan.getUser(data.nick);
 
+			// if user data does not match, update it across the board, just to be sure.
 			if (from.ident !== data.ident || from.hostname !== data.hostname) {
-				from.ident = data.ident;
-				from.hostname = data.hostname;
+				network.channels.forEach((channel) => {
+					const user = channel.findUser(from.nick);
 
-				chan.setUser(from);
+					if (typeof user === "undefined") {
+						return;
+					}
+
+					channel.removeUser(user);
+					user.ident = data.ident;
+					user.hostname = data.hostname;
+					channel.setUser(user);
+
+					client.emit("users", {
+						chan: channel.id,
+					});
+				});
 			}
 
 			// Query messages (unless self) always highlight

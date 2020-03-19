@@ -57,5 +57,22 @@ module.exports = function(irc, network) {
 		}
 
 		chan.pushMessage(client, msg);
+
+		network.channels.forEach((channel) => {
+			const user = channel.findUser(data.nick);
+
+			if (typeof user === "undefined") {
+				return;
+			}
+
+			channel.removeUser(user);
+			user.ident = data.ident;
+			user.hostname = data.hostname;
+			channel.setUser(user);
+
+			client.emit("users", {
+				chan: channel.id,
+			});
+		});
 	}
 };
