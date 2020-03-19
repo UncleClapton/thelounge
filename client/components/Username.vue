@@ -22,6 +22,20 @@ export default {
 	},
 	computed: {
 		nickColor() {
+			if (this.$store.state.settings.coloredNicks === "regex") {
+				const colorRules = Object.values(this.$store.state.settings.nickColorRules);
+				const userString = `${this.user.nick}!${this.user.ident || ""}@${this.user
+					.hostname || ""}`;
+
+				for (const rule of colorRules) {
+					if (userString.includes(rule.pattern)) {
+						return `color-${rule.color}`;
+					}
+				}
+
+				return `color-${this.$store.state.settings.defaultNickColor}`;
+			}
+
 			return colorClass(this.user.nick);
 		},
 	},
