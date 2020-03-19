@@ -117,15 +117,22 @@ export default {
 		},
 
 		onChange(event) {
-			if (event.target.name === "defaultNickColor") {
+			const settingName = event.target.name;
+
+			if (settingName === "defaultNickColor") {
 				this.commitChange("defaultNickColor", event.target.value);
+				return;
+			}
+
+			const rId = event.target.getAttribute("data-rId");
+
+			if (!rId) {
 				return;
 			}
 
 			const nextRuleset = {...this.$store.state.settings.nickColorRules};
 
-			nextRuleset[event.target.getAttribute("data-rId")][event.target.name] =
-				event.target.value;
+			nextRuleset[rId][settingName] = event.target.value;
 
 			this.commitChange("nickColorRules", nextRuleset);
 		},
