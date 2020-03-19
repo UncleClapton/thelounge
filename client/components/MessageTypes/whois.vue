@@ -1,7 +1,13 @@
 <template>
 	<span class="content">
 		<p>
-			<Username :user="{nick: message.whois.nick}" />
+			<Username
+				:user="{
+					nick: message.whois.nick,
+					ident: message.whois.ident,
+					hostname: message.whois.hostname,
+				}"
+			/>
 			<span v-if="message.whois.whowas"> is offline, last information:</span>
 		</p>
 
