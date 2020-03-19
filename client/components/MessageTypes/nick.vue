@@ -2,7 +2,7 @@
 	<span class="content">
 		<Username :user="message.from" />
 		is now known as
-		<Username :user="{nick: message.new_nick, mode: message.from.mode}" />
+		<Username :user="{...message.from, nick: message.new_nick}" />
 	</span>
 </template>
 
