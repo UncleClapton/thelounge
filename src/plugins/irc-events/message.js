@@ -92,6 +92,13 @@ module.exports = function(irc, network) {
 
 			from = chan.getUser(data.nick);
 
+			if (from.ident !== data.ident || from.hostname !== data.hostname) {
+				from.ident = data.ident;
+				from.hostname = data.hostname;
+
+				chan.setUser(from);
+			}
+
 			// Query messages (unless self) always highlight
 			if (chan.type === Chan.Type.QUERY) {
 				highlight = !self;
