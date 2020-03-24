@@ -585,11 +585,7 @@ function initializeClient(socket, client, token, lastMessage, openChannel) {
 				return;
 			}
 
-			if (
-				typeof newSetting.value === "object" ||
-				typeof newSetting.name !== "string" ||
-				newSetting.name[0] === "_"
-			) {
+			if (typeof newSetting.name !== "string" || newSetting.name[0] === "_") {
 				return;
 			}
 
