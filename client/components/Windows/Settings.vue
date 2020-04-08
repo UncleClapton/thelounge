@@ -186,7 +186,7 @@
 						aria-label="Color Settings"
 					>
 						<router-link
-							to="/settings/nick-colors"
+							to="/settings/chat-advanced"
 							tag="button"
 							class="icon"
 							aria-label="Color Settings"
@@ -281,8 +281,7 @@
 						Attempt to remove metadata from images before uploading
 						<span
 							class="tooltipped tooltipped-n tooltipped-no-delay"
-							aria-label="This option renders the image into a canvas element to remove metadata from the image.
-This may break orientation if your browser does not support that."
+							aria-label="This option renders the image into a canvas element to remove metadata from the image. This may break orientation if your browser does not support that."
 						>
 							<button class="extra-help" />
 						</span>
@@ -299,7 +298,7 @@ This may break orientation if your browser does not support that."
 						class="btn"
 						:disabled="
 							$store.state.pushNotificationState !== 'supported' &&
-								$store.state.pushNotificationState !== 'subscribed'
+							$store.state.pushNotificationState !== 'subscribed'
 						"
 						@click="onPushButtonClick"
 					>
@@ -406,7 +405,7 @@ This may break orientation if your browser does not support that."
 			<div
 				v-if="
 					!$store.state.serverConfiguration.public &&
-						!$store.state.serverConfiguration.ldapEnabled
+					!$store.state.serverConfiguration.ldapEnabled
 				"
 				id="change-password"
 				role="group"
@@ -472,6 +471,34 @@ This may break orientation if your browser does not support that."
 						Change password
 					</button>
 				</div>
+			</div>
+
+			<div v-if="$store.state.settings.advanced">
+				<h2>Custom Link Detectors</h2>
+
+				<label class="opt">
+					<input
+						:checked="$store.state.settings.enableLinkDetectors"
+						type="checkbox"
+						name="enableLinkDetectors"
+					/>
+					Enable advanced link detection rules.
+
+					<span
+						v-if="$store.state.settings.enableLinkDetectors"
+						class="tooltipped tooltipped-n tooltipped-no-touch nick-color-settings-link"
+						aria-label="Link Detector Settings"
+					>
+						<router-link
+							to="/settings/chat-advanced"
+							tag="button"
+							class="icon"
+							aria-label="Link Detector Settings"
+							role="tab"
+							aria-controls="settings"
+						/>
+					</span>
+				</label>
 			</div>
 
 			<div v-if="$store.state.settings.advanced">

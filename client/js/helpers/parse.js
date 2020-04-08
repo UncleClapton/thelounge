@@ -11,6 +11,7 @@ import LinkPreviewToggle from "../../components/LinkPreviewToggle.vue";
 import LinkPreviewFileSize from "../../components/LinkPreviewFileSize.vue";
 import InlineChannel from "../../components/InlineChannel.vue";
 import Username from "../../components/Username.vue";
+import findCustomLinks from "./ircmessageparser/findCustomLinks";
 
 const emojiModifiersRegex = /[\u{1f3fb}-\u{1f3ff}]|\u{fe0f}/gu;
 
@@ -81,12 +82,14 @@ function parse(createElement, text, message = undefined, network = undefined) {
 	const channelPrefixes = network ? network.serverOptions.CHANTYPES : ["#", "&"];
 	const userModes = network ? network.serverOptions.PREFIX : ["!", "@", "%", "+"];
 	const channelParts = findChannels(cleanText, channelPrefixes, userModes);
+	const customLinkParts = findCustomLinks(cleanText);
 	const linkParts = findLinks(cleanText);
 	const emojiParts = findEmoji(cleanText);
 	const nameParts = findNames(cleanText, message ? message.users || [] : []);
 
 	const parts = channelParts
 		.concat(linkParts)
+		.concat(customLinkParts)
 		.concat(emojiParts)
 		.concat(nameParts);
 

@@ -109,6 +109,12 @@ export const config = normalizeConfig({
 			}
 		},
 	},
+	enableLinkDetectors: {
+		default: false,
+	},
+	linkDetectors: {
+		default: {},
+	},
 });
 
 export function createState() {
