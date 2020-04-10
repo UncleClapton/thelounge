@@ -71,6 +71,18 @@
 				</template>
 			</div>
 
+			<h2>Channel List</h2>
+			<div>
+				<label class="opt">
+					<input
+						:checked="$store.state.settings.badgeOnlyCountsHighlights"
+						type="checkbox"
+						name="badgeOnlyCountsHighlights"
+					/>
+					Unread badges only count highlights
+				</label>
+			</div>
+
 			<h2>Messages</h2>
 			<div>
 				<label class="opt">
