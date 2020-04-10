@@ -1,7 +1,7 @@
 <template>
 	<ChannelWrapper ref="wrapper" v-bind="$props">
 		<span class="name">{{ channel.name }}</span>
-		<span v-if="channel.unread" :class="{highlight: channel.highlight}" class="badge">{{
+		<span v-if="unreadCount" :class="{highlight: channel.highlight}" class="badge">{{
 			unreadCount
 		}}</span>
 		<template v-if="channel.type === 'channel'">
@@ -41,7 +41,8 @@ export default {
 	},
 	computed: {
 		unreadCount() {
-			return roundBadgeNumber(this.channel.unread);
+			const highlightOnly = this.$store.state.settings.badgeOnlyCountsHighlights;
+			return roundBadgeNumber(this.channel[highlightOnly ? "highlight" : "unread"]);
 		},
 	},
 	methods: {

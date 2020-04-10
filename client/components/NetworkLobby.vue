@@ -27,7 +27,7 @@
 			>
 				<span class="not-connected-icon" />
 			</span>
-			<span v-if="channel.unread" :class="{highlight: channel.highlight}" class="badge">{{
+			<span v-if="unreadCount" :class="{highlight: channel.highlight}" class="badge">{{
 				unreadCount
 			}}</span>
 		</div>
@@ -69,7 +69,8 @@ export default {
 			return this.isJoinChannelShown ? "Cancel" : "Join a channel…";
 		},
 		unreadCount() {
-			return roundBadgeNumber(this.channel.unread);
+			const highlightOnly = this.$store.state.settings.badgeOnlyCountsHighlights;
+			return roundBadgeNumber(this.channel[highlightOnly ? "highlight" : "unread"]);
 		},
 	},
 	methods: {
