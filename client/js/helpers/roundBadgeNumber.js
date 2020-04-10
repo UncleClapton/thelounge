@@ -1,6 +1,10 @@
 "use strict";
 
 export default (count) => {
+	if (count < 1) {
+		return null;
+	}
+
 	if (count < 1000) {
 		return count.toString();
 	}
