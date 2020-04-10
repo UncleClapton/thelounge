@@ -29,12 +29,6 @@ export const config = normalizeConfig({
 	coloredNicks: {
 		default: "hash",
 	},
-	nickColorRules: {
-		default: {},
-	},
-	defaultNickColor: {
-		default: "1",
-	},
 	desktopNotifications: {
 		default: false,
 		apply(store, value) {
@@ -109,11 +103,24 @@ export const config = normalizeConfig({
 			}
 		},
 	},
+
+	// Fork-added Settings
+	nickColorRules: {
+		default: {},
+	},
+	defaultNickColor: {
+		default: "1",
+	},
+
 	enableLinkDetectors: {
 		default: false,
 	},
 	linkDetectors: {
 		default: {},
+	},
+
+	badgeOnlyCountsHighlights: {
+		default: false,
 	},
 });
 
