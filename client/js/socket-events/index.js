@@ -12,6 +12,7 @@ import "./msg_special";
 import "./names";
 import "./network";
 import "./nick";
+import "./nick-query";
 import "./open";
 import "./part";
 import "./quit";
