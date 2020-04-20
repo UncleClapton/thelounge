@@ -328,7 +328,14 @@ export default {
 			if (e.ctrlKey) {
 				this.transform.y += e.deltaY;
 			} else {
-				const delta = e.deltaY > 0 ? 0.1 : -0.1;
+				let delta;
+
+				if (this.$store.state.settings.invertScroll) {
+					delta = e.deltaY > 0 ? 0.1 : -0.1;
+				} else {
+					delta = e.deltaY < 0 ? 0.1 : -0.1;
+				}
+
 				const newScale = Math.min(3, Math.max(0.1, this.transform.scale + delta));
 				const fixedPosition = this.calculateZoomShift(
 					newScale,
