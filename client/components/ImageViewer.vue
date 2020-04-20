@@ -3,7 +3,7 @@
 		id="image-viewer"
 		ref="viewer"
 		:class="{opened: link !== null && !closing}"
-		@wheel="onMouseWheel"
+		@wheel.passive="onMouseWheel"
 		@touchstart.passive="onTouchStart"
 		@click="onClick"
 	>
@@ -324,8 +324,6 @@ export default {
 			if (this.link === null) {
 				return;
 			}
-
-			e.preventDefault(); // TODO: Can this be passive?
 
 			if (e.ctrlKey) {
 				this.transform.y += e.deltaY;
