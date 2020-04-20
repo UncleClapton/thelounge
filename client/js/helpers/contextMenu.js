@@ -1,6 +1,7 @@
 "use strict";
 
 import socket from "../socket";
+import sortChannels from "./sortChannels";
 
 export function generateChannelContextMenu($root, channel, network) {
 	const typeMap = {
@@ -44,6 +45,17 @@ export function generateChannelContextMenu($root, channel, network) {
 				type: "item",
 				class: "join",
 				action: () => (network.isJoinChannelShown = true),
+			},
+			{
+				label: "Sort channels",
+				type: "item",
+				class: "list",
+				action: () =>
+					socket.emit("sort", {
+						type: "channels",
+						target: network.uuid,
+						order: network.channels.sort(sortChannels).map((c) => c.id),
+					}),
 			},
 			{
 				label: "List all channels",
