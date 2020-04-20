@@ -1,11 +1,12 @@
 "use strict";
 
 const Msg = require("../../models/msg");
+const Chan = require("../../models/chan");
 
-module.exports = function(irc, network) {
+module.exports = function (irc, network) {
 	const client = this;
 
-	irc.on("nick", function(data) {
+	irc.on("nick", function (data) {
 		const self = data.nick === irc.user.nick;
 
 		if (self) {
@@ -25,27 +26,45 @@ module.exports = function(irc, network) {
 		}
 
 		network.channels.forEach((chan) => {
-			const user = chan.findUser(data.nick);
-
-			if (typeof user === "undefined") {
-				return;
-			}
-
 			const msg = new Msg({
 				time: data.time,
-				from: user,
 				type: Msg.Type.NICK,
 				new_nick: data.new_nick,
 			});
+
+			if (chan.type === Chan.Type.QUERY) {
+				chan.name = data.new_nick;
+
+				msg.from = {
+					nick: data.nick,
+					ident: data.ident,
+					hostname: data.hostname,
+				};
+
+				client.emit("nick:query", {
+					chanId: chan.id,
+					nick: data.nick,
+					new_nick: data.new_nick,
+				});
+			} else {
+				const user = chan.findUser(data.nick);
+
+				if (typeof user === "undefined") {
+					return;
+				}
+
+				msg.from = user;
+
+				chan.removeUser(user);
+				user.nick = data.new_nick;
+				chan.setUser(user);
+
+				client.emit("users", {
+					chan: chan.id,
+				});
+			}
+
 			chan.pushMessage(client, msg);
-
-			chan.removeUser(user);
-			user.nick = data.new_nick;
-			chan.setUser(user);
-
-			client.emit("users", {
-				chan: chan.id,
-			});
 		});
 	});
 };
