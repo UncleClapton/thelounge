@@ -26,34 +26,31 @@ module.exports = function (irc, network) {
 		}
 
 		network.channels.forEach((chan) => {
-			const msg = new Msg({
-				time: data.time,
-				type: Msg.Type.NICK,
-				new_nick: data.new_nick,
-			});
+			let user;
 
 			if (chan.type === Chan.Type.QUERY) {
+				if (chan.name !== data.nick) {
+					return;
+				}
+
 				chan.name = data.new_nick;
 
-				msg.from = {
+				user = {
 					nick: data.nick,
 					ident: data.ident,
 					hostname: data.hostname,
 				};
 
 				client.emit("nick:query", {
-					chanId: chan.id,
-					nick: data.nick,
-					new_nick: data.new_nick,
+					id: chan.id,
+					name: data.new_nick,
 				});
 			} else {
-				const user = chan.findUser(data.nick);
+				user = chan.findUser(data.nick);
 
 				if (typeof user === "undefined") {
 					return;
 				}
-
-				msg.from = user;
 
 				chan.removeUser(user);
 				user.nick = data.new_nick;
@@ -64,7 +61,15 @@ module.exports = function (irc, network) {
 				});
 			}
 
-			chan.pushMessage(client, msg);
+			chan.pushMessage(
+				client,
+				new Msg({
+					from: user,
+					new_nick: data.new_nick,
+					time: data.time,
+					type: Msg.Type.NICK,
+				})
+			);
 		});
 	});
 };

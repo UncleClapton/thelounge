@@ -5,9 +5,9 @@ import store from "../store";
 
 // Handle nick changes for query windows
 socket.on("nick:query", function (data) {
-	const chanInfo = store.getters.findChannel(data.chanId);
+	const channel = store.getters.findChannel(data.id);
 
-	if (chanInfo && chanInfo.channel) {
-		chanInfo.channel.name = data.new_nick;
+	if (channel && channel.channel) {
+		channel.channel.name = data.name;
 	}
 });
