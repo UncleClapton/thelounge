@@ -94,7 +94,7 @@ export default {
 			const image = this.$refs.image;
 			const width = viewer.offsetWidth;
 			const height = viewer.offsetHeight;
-			const scale = Math.min(1, width / image.width, height / image.height);
+			const scale = Math.min(1, (width * 0.75) / image.width, (height * 0.75) / image.height);
 
 			this.position.x = Math.floor(-image.naturalWidth / 2);
 			this.position.y = Math.floor(-image.naturalHeight / 2);
