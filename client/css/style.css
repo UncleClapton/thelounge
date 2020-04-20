@@ -2805,7 +2805,7 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 	background: var(--overlay-bg-color);
 	visibility: hidden;
 	opacity: 0;
-	transition: opacity 0.2s, visibility 0.2s;
+	transition: opacity 200ms, visibility 0s ease 200ms;
 	z-index: 999;
 	user-select: none;
 }
@@ -2814,6 +2814,7 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 #upload-overlay.is-dragover,
 #image-viewer.opened {
 	visibility: visible;
+	transition: opacity 200ms, visibility 0s ease 0s;
 	opacity: 1;
 }
 

@@ -2,7 +2,7 @@
 	<div
 		id="image-viewer"
 		ref="viewer"
-		:class="{opened: link !== null}"
+		:class="{opened: link !== null && !closing}"
 		@wheel="onMouseWheel"
 		@touchstart.passive="onTouchStart"
 		@click="onClick"
@@ -29,6 +29,7 @@ export default {
 	name: "ImageViewer",
 	data() {
 		return {
+			closing: false,
 			link: null,
 			position: {
 				x: 0,
@@ -78,7 +79,12 @@ export default {
 			}
 
 			this.$root.$off("resize", this.correctPosition);
-			this.link = null;
+			this.closing = true;
+
+			setTimeout(() => {
+				this.link = null;
+				this.closing = false;
+			}, 200);
 		},
 		onImageLoad() {
 			this.prepareImage();
