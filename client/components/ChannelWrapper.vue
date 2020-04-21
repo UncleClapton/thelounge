@@ -13,6 +13,8 @@
 					channel.type === 'lobby' && network.status.connected && !network.status.secure,
 			},
 			{'not-connected': channel.type === 'lobby' && !network.status.connected},
+			{'has-unread': channel.unread > 0},
+			{'has-highlight': channel.highlight > 0},
 		]"
 		:aria-label="getAriaLabel()"
 		:title="getAriaLabel()"
