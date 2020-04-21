@@ -7,12 +7,13 @@ const mime = require("mime-types");
 const Helper = require("../../helper");
 const cleanIrcMessage = require("../../../client/js/helpers/ircmessageparser/cleanIrcMessage");
 const findLinks = require("../../../client/js/helpers/ircmessageparser/findLinks");
+const findCustomLinks = require("../../../client/js/helpers/ircmessageparser/findCustomLinks");
 const storage = require("../storage");
 const currentFetchPromises = new Map();
 const imageTypeRegex = /^image\/.+/;
 const mediaTypeRegex = /^(audio|video)\/.+/;
 
-module.exports = function(client, chan, msg) {
+module.exports = function (client, chan, msg) {
 	if (!Helper.config.prefetch) {
 		return;
 	}
@@ -20,7 +21,15 @@ module.exports = function(client, chan, msg) {
 	// Remove all IRC formatting characters before searching for links
 	const cleanText = cleanIrcMessage(msg.text);
 
-	msg.previews = findLinks(cleanText).reduce((cleanLinks, link) => {
+	let customLinkParts = [];
+
+	if (client.config.clientSettings && client.config.clientSettings.enableLinkDetectors) {
+		customLinkParts = findCustomLinks(cleanText, client.config.clientSettings.linkDetectors);
+	}
+
+	const parts = [].concat(findLinks(cleanText), customLinkParts);
+
+	msg.previews = parts.reduce((cleanLinks, link) => {
 		const url = normalizeURL(link.link);
 
 		// If the URL is invalid and cannot be normalized, don't fetch it
@@ -78,9 +87,7 @@ function parseHtml(preview, res, client) {
 				preview.type = "link";
 				preview.head =
 					$('meta[property="og:title"]').attr("content") ||
-					$("head > title, title")
-						.first()
-						.text() ||
+					$("head > title, title").first().text() ||
 					"";
 				preview.body =
 					$('meta[property="og:description"]').attr("content") ||
@@ -136,7 +143,7 @@ function parseHtmlMedia($, preview, client) {
 				return;
 			}
 
-			$(`meta[property="og:${type}:type"]`).each(function(i) {
+			$(`meta[property="og:${type}:type"]`).each(function (i) {
 				const mimeType = $(this).attr("content");
 
 				if (mediaTypeRegex.test(mimeType)) {
@@ -360,7 +367,7 @@ function fetch(uri, headers) {
 			});
 
 			gotStream
-				.on("response", function(res) {
+				.on("response", function (res) {
 					contentLength = parseInt(res.headers["content-length"], 10) || 0;
 					contentType = res.headers["content-type"];
 

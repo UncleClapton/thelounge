@@ -8,6 +8,7 @@ export default {
 		text: String,
 		message: Object,
 		network: Object,
+		linkDetectors: Object,
 	},
 	render(createElement, context) {
 		return parse(
@@ -16,7 +17,8 @@ export default {
 				? context.props.text
 				: context.props.message.text,
 			context.props.message,
-			context.props.network
+			context.props.network,
+			context.props.linkDetectors
 		);
 	},
 };

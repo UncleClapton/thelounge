@@ -4,9 +4,13 @@
 			><Username :user="message.from" /> has changed the topic to:
 		</template>
 		<template v-else>The topic is: </template>
-		<span v-if="message.text" class="new-topic"
-			><ParsedMessage :network="network" :message="message"
-		/></span>
+		<span v-if="message.text" class="new-topic">
+			<ParsedMessage
+				:network="network"
+				:message="message"
+				:link-detectors="$store.state.settings.linkDetectors"
+			/>
+		</span>
 	</span>
 </template>
 

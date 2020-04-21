@@ -122,6 +122,10 @@ export const config = normalizeConfig({
 	badgeOnlyCountsHighlights: {
 		default: false,
 	},
+
+	invertScroll: {
+		default: false,
+	},
 });
 
 export function createState() {

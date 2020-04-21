@@ -7,10 +7,10 @@ const cleanIrcMessage = require("../../../client/js/helpers/ircmessageparser/cle
 const Helper = require("../../helper");
 const nickRegExp = /(?:\x03[0-9]{1,2}(?:,[0-9]{1,2})?)?([\w[\]\\`^{|}-]+)/g;
 
-module.exports = function(irc, network) {
+module.exports = function (irc, network) {
 	const client = this;
 
-	irc.on("notice", function(data) {
+	irc.on("notice", function (data) {
 		// Some servers send notices without any nickname
 		if (!data.nick) {
 			data.from_server = true;
@@ -21,17 +21,17 @@ module.exports = function(irc, network) {
 		handleMessage(data);
 	});
 
-	irc.on("action", function(data) {
+	irc.on("action", function (data) {
 		data.type = Msg.Type.ACTION;
 		handleMessage(data);
 	});
 
-	irc.on("privmsg", function(data) {
+	irc.on("privmsg", function (data) {
 		data.type = Msg.Type.MESSAGE;
 		handleMessage(data);
 	});
 
-	irc.on("wallops", function(data) {
+	irc.on("wallops", function (data) {
 		data.from_server = true;
 		data.type = Msg.Type.NOTICE;
 		handleMessage(data);
@@ -42,19 +42,22 @@ module.exports = function(irc, network) {
 		let from;
 		let highlight = false;
 		let showInActive = false;
-		const self = data.nick === irc.user.nick;
+		const isSelf = data.nick === irc.user.nick;
 
 		// Check if the sender is in our ignore list
 		const shouldIgnore =
-			!self &&
-			network.ignoreList.some(function(entry) {
+			!isSelf &&
+			network.ignoreList.some(function (entry) {
 				return Helper.compareHostmask(entry, data);
 			});
 
 		// Server messages go to server window, no questions asked
 		if (data.from_server) {
 			chan = network.channels[0];
-			from = chan.getUser(data.nick);
+			from = chan.getUser(data.nick, {
+				ident: data.ident,
+				hostname: data.hostname,
+			});
 		} else {
 			if (shouldIgnore) {
 				return;
@@ -90,7 +93,10 @@ module.exports = function(irc, network) {
 				}
 			}
 
-			from = chan.getUser(data.nick);
+			from = chan.getUser(data.nick, {
+				ident: data.ident,
+				hostname: data.hostname,
+			});
 
 			// if user data does not match, update it across the board, just to be sure.
 			if (from.ident !== data.ident || from.hostname !== data.hostname) {
@@ -114,7 +120,7 @@ module.exports = function(irc, network) {
 
 			// Query messages (unless self) always highlight
 			if (chan.type === Chan.Type.QUERY) {
-				highlight = !self;
+				highlight = !isSelf;
 			} else if (chan.type === Chan.Type.CHANNEL) {
 				from.lastMessage = data.time || Date.now();
 			}
@@ -125,7 +131,7 @@ module.exports = function(irc, network) {
 			type: data.type,
 			time: data.time,
 			text: data.message,
-			self: self,
+			self: isSelf,
 			from: from,
 			highlight: highlight,
 			users: {},

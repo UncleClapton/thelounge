@@ -71,7 +71,7 @@ function createFragment(fragment, createElement) {
 
 // Transform an IRC message potentially filled with styling control codes, URLs,
 // nicknames, and channels into a string of HTML elements to display on the client.
-function parse(createElement, text, message = undefined, network = undefined) {
+function parse(createElement, text, message = undefined, network = undefined, customDetectors) {
 	// Extract the styling information and get the plain text version from it
 	const styleFragments = parseStyle(text);
 	const cleanText = styleFragments.map((fragment) => fragment.text).join("");
@@ -82,10 +82,10 @@ function parse(createElement, text, message = undefined, network = undefined) {
 	const channelPrefixes = network ? network.serverOptions.CHANTYPES : ["#", "&"];
 	const userModes = network ? network.serverOptions.PREFIX : ["!", "@", "%", "+"];
 	const channelParts = findChannels(cleanText, channelPrefixes, userModes);
-	const customLinkParts = findCustomLinks(cleanText);
+	const customLinkParts = findCustomLinks(cleanText, customDetectors);
 	const linkParts = findLinks(cleanText);
 	const emojiParts = findEmoji(cleanText);
-	const nameParts = findNames(cleanText, message ? message.users || [] : []);
+	const nameParts = findNames(cleanText, message ? message.users || {} : {});
 
 	const parts = channelParts
 		.concat(linkParts)

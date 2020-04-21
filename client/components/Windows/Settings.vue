@@ -279,6 +279,18 @@
 				</div>
 			</template>
 
+			<h2>Image Viewer</h2>
+			<div>
+				<label class="opt">
+					<input
+						:checked="$store.state.settings.invertScroll"
+						type="checkbox"
+						name="invertScroll"
+					/>
+					Invert scroll wheel zoom direction
+				</label>
+			</div>
+
 			<div
 				v-if="$store.state.settings.advanced && $store.state.serverConfiguration.fileUpload"
 			>

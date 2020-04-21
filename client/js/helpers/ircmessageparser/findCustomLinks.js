@@ -1,14 +1,10 @@
 "use strict";
 
-import store from "../../store";
-
-function findCustomLinks(text) {
-	const enableLinkDetectors = store.state.settings.enableLinkDetectors;
-	const detectors = store.state.settings.linkDetectors;
+function findCustomLinks(text, detectors = {}) {
 	const result = [];
 
 	// Return early if we don't have any custom links to find
-	if (!enableLinkDetectors || detectors.length === 0) {
+	if (Object.keys(detectors).length === 0) {
 		return result;
 	}
 
@@ -28,4 +24,4 @@ function findCustomLinks(text) {
 	return result;
 }
 
-export default findCustomLinks;
+module.exports = findCustomLinks;

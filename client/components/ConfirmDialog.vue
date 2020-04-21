@@ -1,5 +1,5 @@
 <template>
-	<div id="confirm-dialog-overlay" :class="{opened: data !== null}">
+	<div id="confirm-dialog-overlay" :class="{opened: data !== null && !closing}">
 		<div v-if="data !== null" id="confirm-dialog">
 			<div class="confirm-text">
 				<div class="confirm-text-title">{{ data.title }}</div>
@@ -57,6 +57,7 @@ export default {
 		return {
 			data: null,
 			callback: null,
+			closing: false,
 		};
 	},
 	mounted() {
@@ -73,11 +74,16 @@ export default {
 			this.callback = callback;
 		},
 		close(result) {
-			this.data = null;
+			this.closing = true;
 
-			if (this.callback) {
-				this.callback(!!result);
-			}
+			setTimeout(() => {
+				this.data = null;
+				this.closing = false;
+
+				if (this.callback) {
+					this.callback(!!result);
+				}
+			}, 200);
 		},
 	},
 };

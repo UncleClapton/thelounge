@@ -2,8 +2,8 @@
 	<div
 		id="image-viewer"
 		ref="viewer"
-		:class="{opened: link !== null}"
-		@wheel="onMouseWheel"
+		:class="{opened: link !== null && !closing}"
+		@wheel.passive="onMouseWheel"
 		@touchstart.passive="onTouchStart"
 		@click="onClick"
 	>
@@ -29,6 +29,7 @@ export default {
 	name: "ImageViewer",
 	data() {
 		return {
+			closing: false,
 			link: null,
 			position: {
 				x: 0,
@@ -78,7 +79,12 @@ export default {
 			}
 
 			this.$root.$off("resize", this.correctPosition);
-			this.link = null;
+			this.closing = true;
+
+			setTimeout(() => {
+				this.link = null;
+				this.closing = false;
+			}, 200);
 		},
 		onImageLoad() {
 			this.prepareImage();
@@ -88,7 +94,7 @@ export default {
 			const image = this.$refs.image;
 			const width = viewer.offsetWidth;
 			const height = viewer.offsetHeight;
-			const scale = Math.min(1, width / image.width, height / image.height);
+			const scale = Math.min(1, (width * 0.75) / image.width, (height * 0.75) / image.height);
 
 			this.position.x = Math.floor(-image.naturalWidth / 2);
 			this.position.y = Math.floor(-image.naturalHeight / 2);
@@ -319,12 +325,17 @@ export default {
 				return;
 			}
 
-			e.preventDefault(); // TODO: Can this be passive?
-
 			if (e.ctrlKey) {
 				this.transform.y += e.deltaY;
 			} else {
-				const delta = e.deltaY > 0 ? 0.1 : -0.1;
+				let delta;
+
+				if (this.$store.state.settings.invertScroll) {
+					delta = e.deltaY > 0 ? 0.1 : -0.1;
+				} else {
+					delta = e.deltaY < 0 ? 0.1 : -0.1;
+				}
+
 				const newScale = Math.min(3, Math.max(0.1, this.transform.scale + delta));
 				const fixedPosition = this.calculateZoomShift(
 					newScale,
