@@ -85,7 +85,7 @@ function parse(createElement, text, message = undefined, network = undefined, cu
 	const customLinkParts = findCustomLinks(cleanText, customDetectors);
 	const linkParts = findLinks(cleanText);
 	const emojiParts = findEmoji(cleanText);
-	const nameParts = findNames(cleanText, message ? message.users || [] : []);
+	const nameParts = findNames(cleanText, message ? message.users || {} : {});
 
 	const parts = channelParts
 		.concat(linkParts)
