@@ -8,6 +8,7 @@ export default {
 		text: String,
 		message: Object,
 		network: Object,
+		linkDetectors: Object,
 	},
 	render(createElement, context) {
 		return parse(
@@ -17,7 +18,7 @@ export default {
 				: context.props.message.text,
 			context.props.message,
 			context.props.network,
-			context.parent.$store.state.settings.linkDetectors
+			context.props.linkDetectors
 		);
 	},
 };

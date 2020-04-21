@@ -26,6 +26,7 @@
 			<span class="content" dir="auto">
 				<Username :user="message.from" dir="auto" />&#32;<ParsedMessage
 					:message="message"
+					:link-detectors="$store.state.settings.linkDetectors"
 				/>
 				<LinkPreview
 					v-for="preview in message.previews"
@@ -64,7 +65,11 @@
 					class="msg-shown-in-active tooltipped tooltipped-e"
 					><span></span
 				></span>
-				<ParsedMessage :network="network" :message="message" />
+				<ParsedMessage
+					:network="network"
+					:message="message"
+					:link-detectors="$store.state.settings.linkDetectors"
+				/>
 				<LinkPreview
 					v-for="preview in message.previews"
 					:key="preview.link"
