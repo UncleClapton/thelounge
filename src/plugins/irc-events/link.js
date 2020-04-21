@@ -21,10 +21,13 @@ module.exports = function (client, chan, msg) {
 	// Remove all IRC formatting characters before searching for links
 	const cleanText = cleanIrcMessage(msg.text);
 
-	const linkParts = findLinks(cleanText);
-	const customLinkParts = findCustomLinks(cleanText, client.config.clientSettings.linkDetectors);
+	let customLinkParts = [];
 
-	const parts = linkParts.concat(customLinkParts);
+	if (client.config.clientSettings && client.config.clientSettings.enableLinkDetectors) {
+		customLinkParts = findCustomLinks(cleanText, client.config.clientSettings.linkDetectors);
+	}
+
+	const parts = [].concat(findLinks(cleanText), customLinkParts);
 
 	msg.previews = parts.reduce((cleanLinks, link) => {
 		const url = normalizeURL(link.link);
