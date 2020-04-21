@@ -4,52 +4,75 @@ const expect = require("chai").expect;
 const findNames = require("../../../../../client/js/helpers/ircmessageparser/findNames").default;
 
 describe("findNames", () => {
-	it("should find nicks in text", () => {
+	it("should find users in text", () => {
 		const input = "<MaxLeiter>: Hello, xPaw, how's it going?";
 		const expected = [
 			{
 				start: 1,
 				end: 10,
-				nick: "MaxLeiter",
+				user: {
+					nick: "MaxLeiter",
+				},
 			},
 			{
 				start: 20,
 				end: 24,
-				nick: "xPaw",
+				user: {
+					nick: "xPaw",
+				},
 			},
 		];
-		const nicks = ["MaxLeiter", "xPaw"];
-		const actual = findNames(input, nicks);
+		const users = {
+			MaxLeiter: {
+				nick: "MaxLeiter",
+			},
+			xPaw: {
+				nick: "xPaw",
+			},
+		};
+		const actual = findNames(input, users);
 
 		expect(actual).to.deep.equal(expected);
 	});
 
-	it("should not find nicks as part of a bigger string (issue #1776)", () => {
+	it("should not find users as part of a bigger string (issue #1776)", () => {
 		const input = "you're very unlucky, luck";
 		const expected = [
 			{
 				start: 21,
 				end: 25,
-				nick: "luck",
+				user: {
+					nick: "luck",
+				},
 			},
 		];
-		const nicks = ["luck"];
-		const actual = findNames(input, nicks);
+		const users = {
+			luck: {
+				nick: "luck",
+			},
+		};
+		const actual = findNames(input, users);
 
 		expect(actual).to.deep.equal(expected);
 	});
 
-	it("should find nicks as short as one character (issue #1885)", () => {
+	it("should find users as short as one character (issue #1885)", () => {
 		const input = "aaa aa abc a";
 		const expected = [
 			{
 				start: 11,
 				end: 12,
-				nick: "a",
+				user: {
+					nick: "a",
+				},
 			},
 		];
-		const nicks = ["a"];
-		const actual = findNames(input, nicks);
+		const users = {
+			a: {
+				nick: "a",
+			},
+		};
+		const actual = findNames(input, users);
 
 		expect(actual).to.deep.equal(expected);
 	});
@@ -60,21 +83,31 @@ describe("findNames", () => {
 			{
 				start: 0,
 				end: 4,
-				nick: "xPaw",
+				user: {
+					nick: "xPaw",
+				},
 			},
 			{
 				start: 5,
 				end: 9,
-				nick: "xPaw",
+				user: {
+					nick: "xPaw",
+				},
 			},
 			{
 				start: 10,
 				end: 14,
-				nick: "xPaw",
+				user: {
+					nick: "xPaw",
+				},
 			},
 		];
-		const nicks = ["xPaw", "xPaw", "xPaw"];
-		const actual = findNames(input, nicks);
+		const users = {
+			xPaw: {
+				nick: "xPaw",
+			},
+		};
+		const actual = findNames(input, users);
 
 		expect(actual).to.deep.equal(expected);
 	});
