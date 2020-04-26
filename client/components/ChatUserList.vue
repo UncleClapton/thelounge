@@ -23,7 +23,8 @@
 			<div
 				v-for="(users, mode) in groupedUsers"
 				:key="mode"
-				:class="['user-mode', getModeClass(mode)]"
+				class="user-mode"
+				:data-modename="getModeName(mode)"
 			>
 				<template v-if="userSearchInput.length > 0">
 					<Username
@@ -53,14 +54,14 @@
 import {filter as fuzzyFilter} from "fuzzy";
 import Username from "./Username.vue";
 
-const modes = {
-	"~": "owner",
-	"&": "admin",
-	"!": "admin",
-	"@": "op",
-	"%": "half-op",
-	"+": "voice",
-	"": "normal",
+const modeNames = {
+	"~": "Owner",
+	"&": "Administrators",
+	"!": "Administrators",
+	"@": "Operators",
+	"%": "Half-Operators",
+	"+": "Voiced",
+	"": "Users",
 };
 
 export default {
@@ -70,6 +71,7 @@ export default {
 	},
 	props: {
 		channel: Object,
+		network: Object,
 	},
 	data() {
 		return {
@@ -121,8 +123,8 @@ export default {
 		setUserSearchInput(e) {
 			this.userSearchInput = e.target.value;
 		},
-		getModeClass(mode) {
-			return modes[mode];
+		getModeName(mode) {
+			return modeNames[mode];
 		},
 		selectUser() {
 			// Simulate a click on the active user to open the context menu.
