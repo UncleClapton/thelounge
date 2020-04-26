@@ -1760,6 +1760,7 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 }
 
 #chat .user-mode::before {
+	content: attr(data-modename);
 	background: var(--window-bg-color);
 	color: var(--body-color-muted);
 	display: block;
