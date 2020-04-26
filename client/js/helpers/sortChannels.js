@@ -1,9 +1,12 @@
 export default function sortChannels(chanA, chanB) {
-	if (chanA.name > chanB.name) {
+	const chanAName = chanA.name.toLowerCase();
+	const chanBName = chanB.name.toLowerCase();
+
+	if (chanAName > chanBName) {
 		return 1;
 	}
 
-	if (chanA.name < chanB.name) {
+	if (chanAName < chanBName) {
 		return -1;
 	}
 
