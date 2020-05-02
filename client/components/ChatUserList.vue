@@ -21,10 +21,11 @@
 		</div>
 		<div class="names">
 			<div
-				v-for="(users, mode) in groupedUsers"
-				:key="mode"
+				v-for="(users, name) in groupedUsers"
+				v-if="users"
+				:key="name"
 				class="user-mode"
-				:data-modename="getModeName(mode)"
+				:data-modename="name"
 			>
 				<template v-if="userSearchInput.length > 0">
 					<Username
@@ -53,16 +54,7 @@
 <script>
 import {filter as fuzzyFilter} from "fuzzy";
 import Username from "./Username.vue";
-
-const modeNames = {
-	"~": "Owner",
-	"&": "Administrators",
-	"!": "Administrators",
-	"@": "Operators",
-	"%": "Half-Operators",
-	"+": "Voiced",
-	"": "Users",
-};
+import UserListOrder from "../js/helpers/UserListOrder";
 
 export default {
 	name: "ChatUserList",
@@ -80,6 +72,10 @@ export default {
 		};
 	},
 	computed: {
+		userListOrder() {
+			return new UserListOrder(this.network.userListOrder);
+		},
+
 		// filteredUsers is computed, to avoid unnecessary filtering
 		// as it is shared between filtering and keybindings.
 		filteredUsers() {
@@ -94,37 +90,25 @@ export default {
 			});
 		},
 		groupedUsers() {
-			const groups = {};
-
 			if (this.userSearchInput) {
 				const result = this.filteredUsers;
 
-				for (const user of result) {
-					if (!groups[user.original.mode]) {
-						groups[user.original.mode] = [];
-					}
-
-					groups[user.original.mode].push(user);
-				}
-			} else {
-				for (const user of this.channel.users) {
-					if (!groups[user.mode]) {
-						groups[user.mode] = [user];
-					} else {
-						groups[user.mode].push(user);
-					}
-				}
+				return this.userListOrder.groupUsers(result, true);
 			}
 
-			return groups;
+			return this.userListOrder.groupUsers(this.channel.users);
+		},
+	},
+	watch: {
+		network: (newVal, oldVal) => {
+			if (newVal.userListOrder !== oldVal.userListOrder) {
+				this.userListOrder = new UserListOrder(newVal.userListOrder);
+			}
 		},
 	},
 	methods: {
 		setUserSearchInput(e) {
 			this.userSearchInput = e.target.value;
-		},
-		getModeName(mode) {
-			return modeNames[mode];
 		},
 		selectUser() {
 			// Simulate a click on the active user to open the context menu.
