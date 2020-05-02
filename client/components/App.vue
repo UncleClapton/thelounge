@@ -3,6 +3,7 @@
 		<Sidebar v-if="$store.state.appLoaded" :overlay="$refs.overlay" />
 		<div id="sidebar-overlay" ref="overlay" @click="$store.commit('sidebarOpen', false)" />
 		<router-view ref="window"></router-view>
+		<Mentions />
 		<ImageViewer ref="imageViewer" />
 		<ContextMenu ref="contextMenu" />
 		<ConfirmDialog ref="confirmDialog" />
@@ -12,6 +13,7 @@
 
 <script>
 const constants = require("../js/constants");
+import eventbus from "../js/eventbus";
 import Mousetrap from "mousetrap";
 import throttle from "lodash/throttle";
 import storage from "../js/localStorage";
@@ -21,6 +23,7 @@ import Sidebar from "./Sidebar.vue";
 import ImageViewer from "./ImageViewer.vue";
 import ContextMenu from "./ContextMenu.vue";
 import ConfirmDialog from "./ConfirmDialog.vue";
+import Mentions from "./Mentions.vue";
 
 export default {
 	name: "App",
@@ -29,6 +32,7 @@ export default {
 		ImageViewer,
 		ContextMenu,
 		ConfirmDialog,
+		Mentions,
 	},
 	computed: {
 		viewportClasses() {
@@ -50,14 +54,14 @@ export default {
 
 		// Make a single throttled resize listener available to all components
 		this.debouncedResize = throttle(() => {
-			this.$root.$emit("resize");
+			eventbus.emit("resize");
 		}, 100);
 
 		window.addEventListener("resize", this.debouncedResize, {passive: true});
 
 		// Emit a daychange event every time the day changes so date markers know when to update themselves
 		const emitDayChange = () => {
-			this.$root.$emit("daychange");
+			eventbus.emit("daychange");
 			// This should always be 24h later but re-computing exact value just in case
 			this.dayChangeTimeout = setTimeout(emitDayChange, this.msUntilNextDay());
 		};
@@ -74,7 +78,7 @@ export default {
 	},
 	methods: {
 		escapeKey() {
-			this.$root.$emit("escapekey");
+			eventbus.emit("escapekey");
 		},
 		toggleSidebar(e) {
 			if (isIgnoredKeybind(e)) {

@@ -16,7 +16,7 @@ try {
 	};
 }
 
-socket.on("msg", function(data) {
+socket.on("msg", function (data) {
 	const receivingChannel = store.getters.findChannel(data.chan);
 
 	if (!receivingChannel) {
@@ -89,12 +89,8 @@ socket.on("msg", function(data) {
 		channel.moreHistoryAvailable = true;
 	}
 
-	if ((data.msg.type === "message" || data.msg.type === "action") && channel.type === "channel") {
-		const user = channel.users.find((u) => u.nick === data.msg.from.nick);
-
-		if (user) {
-			user.lastMessage = new Date(data.msg.time).getTime() || Date.now();
-		}
+	if (channel.type === "channel") {
+		updateUserList(channel, data.msg);
 	}
 });
 
@@ -155,7 +151,7 @@ function notifyMessage(targetId, channel, activeChannel, msg) {
 							body: body,
 							timestamp: timestamp,
 						});
-						notify.addEventListener("click", function() {
+						notify.addEventListener("click", function () {
 							this.close();
 							window.focus();
 
@@ -170,6 +166,28 @@ function notifyMessage(targetId, channel, activeChannel, msg) {
 					// `new Notification(...)` is not supported and should be silenced.
 				}
 			}
+		}
+	}
+}
+
+function updateUserList(channel, msg) {
+	if (msg.type === "message" || msg.type === "action") {
+		const user = channel.users.find((u) => u.nick === msg.from.nick);
+
+		if (user) {
+			user.lastMessage = new Date(msg.time).getTime() || Date.now();
+		}
+	} else if (msg.type === "quit" || msg.type === "part") {
+		const idx = channel.users.findIndex((u) => u.nick === msg.from.nick);
+
+		if (idx > -1) {
+			channel.users.splice(idx, 1);
+		}
+	} else if (msg.type === "kick") {
+		const idx = channel.users.findIndex((u) => u.nick === msg.target.nick);
+
+		if (idx > -1) {
+			channel.users.splice(idx, 1);
 		}
 	}
 }

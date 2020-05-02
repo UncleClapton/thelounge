@@ -56,6 +56,7 @@ function Client(manager, name, config = {}) {
 		idMsg: 1,
 		name: name,
 		networks: [],
+		mentions: [],
 		manager: manager,
 		messageStorage: [],
 		highlightRegex: null,
@@ -226,7 +227,7 @@ Client.prototype.connect = function (args, isStartup = false) {
 	const network = new Network({
 		uuid: args.uuid,
 		name: String(
-			args.name || (Helper.config.displayNetwork ? "" : Helper.config.defaults.name) || ""
+			args.name || (Helper.config.lockNetwork ? Helper.config.defaults.name : "") || ""
 		),
 		host: String(args.host || ""),
 		port: parseInt(args.port, 10),
@@ -238,6 +239,9 @@ Client.prototype.connect = function (args, isStartup = false) {
 		nick: String(args.nick || ""),
 		username: String(args.username || ""),
 		realname: String(args.realname || ""),
+		sasl: String(args.sasl || ""),
+		saslAccount: String(args.saslAccount || ""),
+		saslPassword: String(args.saslPassword || ""),
 		commands: args.commands || [],
 		channels: channels,
 		ignoreList: args.ignoreList ? args.ignoreList : [],

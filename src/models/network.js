@@ -7,6 +7,7 @@ const Chan = require("./chan");
 const Msg = require("./msg");
 const Helper = require("../helper");
 const STSPolicies = require("../plugins/sts");
+const ClientCertificate = require("../plugins/clientCertificate");
 
 module.exports = Network;
 
@@ -35,6 +36,9 @@ function Network(attr) {
 		commands: [],
 		username: "",
 		realname: "",
+		sasl: "",
+		saslAccount: "",
+		saslPassword: "",
 		channels: [],
 		irc: null,
 		userListOrder: "",
@@ -83,9 +87,19 @@ Network.prototype.validate = function (client) {
 	this.password = cleanString(this.password);
 	this.host = cleanString(this.host).toLowerCase();
 	this.name = cleanString(this.name);
+	this.saslAccount = cleanString(this.saslAccount);
+	this.saslPassword = cleanString(this.saslPassword);
 
 	if (!this.port) {
 		this.port = this.tls ? 6697 : 6667;
+	}
+
+	if (!["", "plain", "external"].includes(this.sasl)) {
+		this.sasl = "";
+	}
+
+	if (!this.tls) {
+		ClientCertificate.remove(this.uuid);
 	}
 
 	if (Helper.config.lockNetwork) {
@@ -108,6 +122,7 @@ Network.prototype.validate = function (client) {
 			return false;
 		}
 
+		this.name = Helper.config.defaults.name;
 		this.host = Helper.config.defaults.host;
 		this.port = Helper.config.defaults.port;
 		this.tls = Helper.config.defaults.tls;
@@ -150,23 +165,16 @@ Network.prototype.validate = function (client) {
 Network.prototype.createIrcFramework = function (client) {
 	this.irc = new IrcFramework.Client({
 		version: false, // We handle it ourselves
-		host: this.host,
-		port: this.port,
-		nick: this.nick,
-		username: Helper.config.useHexIp ? Helper.ip2hex(client.config.browser.ip) : this.username,
-		gecos: this.realname,
-		password: this.password,
-		tls: this.tls,
 		outgoing_addr: Helper.config.bind,
-		rejectUnauthorized: this.rejectUnauthorized,
 		enable_chghost: true,
 		enable_echomessage: true,
 		enable_setname: true,
 		auto_reconnect: true,
 		auto_reconnect_wait: 10000 + Math.floor(Math.random() * 1000), // If multiple users are connected to the same network, randomize their reconnections a little
 		auto_reconnect_max_retries: 360, // At least one hour (plus timeouts) worth of reconnections
-		webirc: this.createWebIrc(client),
 	});
+
+	this.setIrcFrameworkOptions(client);
 
 	this.irc.requestCap([
 		"znc.in/self-message", // Legacy echo-message for ZNC
@@ -176,6 +184,36 @@ Network.prototype.createIrcFramework = function (client) {
 	// See http://wiki.znc.in/Playback
 	if (client.config.log && client.messageStorage.find((s) => s.canProvideMessages())) {
 		this.irc.requestCap("znc.in/playback");
+	}
+};
+
+Network.prototype.setIrcFrameworkOptions = function (client) {
+	this.irc.options.host = this.host;
+	this.irc.options.port = this.port;
+	this.irc.options.password = this.password;
+	this.irc.options.nick = this.nick;
+	this.irc.options.username = Helper.config.useHexIp
+		? Helper.ip2hex(client.config.browser.ip)
+		: this.username;
+	this.irc.options.gecos = this.realname;
+	this.irc.options.tls = this.tls;
+	this.irc.options.rejectUnauthorized = this.rejectUnauthorized;
+	this.irc.options.webirc = this.createWebIrc(client);
+
+	this.irc.options.client_certificate = this.tls ? ClientCertificate.get(this.uuid) : null;
+
+	if (!this.sasl) {
+		delete this.irc.options.sasl_mechanism;
+		delete this.irc.options.account;
+	} else if (this.sasl === "external") {
+		this.irc.options.sasl_mechanism = "EXTERNAL";
+		this.irc.options.account = {};
+	} else if (this.sasl === "plain") {
+		delete this.irc.options.sasl_mechanism;
+		this.irc.options.account = {
+			account: this.saslAccount,
+			password: this.saslPassword,
+		};
 	}
 };
 
@@ -224,6 +262,9 @@ Network.prototype.edit = function (client, args) {
 	this.username = String(args.username || "");
 	this.realname = String(args.realname || "");
 	this.userListOrder = String(args.userListOrder || "");
+	this.sasl = String(args.sasl || "");
+	this.saslAccount = String(args.saslAccount || "");
+	this.saslPassword = String(args.saslPassword || "");
 
 	// Split commands into an array
 	this.commands = String(args.commands || "")
@@ -246,7 +287,7 @@ Network.prototype.edit = function (client, args) {
 				// Send new nick straight away
 				this.irc.changeNick(this.nick);
 			} else {
-				this.irc.options.nick = this.irc.user.nick = this.nick;
+				this.irc.user.nick = this.nick;
 
 				// Update UI nick straight away if IRC is not connected
 				client.emit("nick", {
@@ -264,16 +305,10 @@ Network.prototype.edit = function (client, args) {
 			this.irc.raw("SETNAME", this.realname);
 		}
 
-		this.irc.options.host = this.host;
-		this.irc.options.port = this.port;
-		this.irc.options.password = this.password;
-		this.irc.options.gecos = this.irc.user.gecos = this.realname;
-		this.irc.options.tls = this.tls;
-		this.irc.options.rejectUnauthorized = this.rejectUnauthorized;
+		this.setIrcFrameworkOptions(client);
 
-		if (!Helper.config.useHexIp) {
-			this.irc.options.username = this.irc.user.username = this.username;
-		}
+		this.irc.user.username = this.irc.options.username;
+		this.irc.user.gecos = this.irc.options.gecos;
 	}
 
 	client.save();
@@ -299,6 +334,10 @@ Network.prototype.setNick = function (nick) {
 
 	if (this.keepNick === nick) {
 		this.keepNick = null;
+	}
+
+	if (this.irc) {
+		this.irc.options.nick = nick;
 	}
 };
 
@@ -388,27 +427,25 @@ Network.prototype.quit = function (quitMessage) {
 };
 
 Network.prototype.exportForEdit = function () {
-	let fieldsToReturn;
+	const fieldsToReturn = [
+		"uuid",
+		"name",
+		"nick",
+		"password",
+		"username",
+		"realname",
+		"sasl",
+		"saslAccount",
+		"saslPassword",
+		"userListOrder",
+		"commands",
+	];
 
-	if (Helper.config.displayNetwork) {
-		// Return fields required to edit a network
-		fieldsToReturn = [
-			"uuid",
-			"nick",
-			"name",
-			"host",
-			"port",
-			"tls",
-			"rejectUnauthorized",
-			"userListOrder",
-			"password",
-			"username",
-			"realname",
-			"commands",
-		];
-	} else {
-		// Same fields as in getClientConfiguration when network is hidden
-		fieldsToReturn = ["name", "nick", "username", "password", "realname"];
+	if (!Helper.config.lockNetwork) {
+		fieldsToReturn.push("host");
+		fieldsToReturn.push("port");
+		fieldsToReturn.push("tls");
+		fieldsToReturn.push("rejectUnauthorized");
 	}
 
 	const data = _.pick(this, fieldsToReturn);
@@ -433,6 +470,9 @@ Network.prototype.export = function () {
 		"password",
 		"username",
 		"realname",
+		"sasl",
+		"saslAccount",
+		"saslPassword",
 		"commands",
 		"ignoreList",
 	]);

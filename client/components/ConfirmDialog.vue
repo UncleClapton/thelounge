@@ -51,6 +51,8 @@
 </style>
 
 <script>
+import eventbus from "../js/eventbus";
+
 export default {
 	name: "ConfirmDialog",
 	data() {
@@ -61,12 +63,12 @@ export default {
 		};
 	},
 	mounted() {
-		this.$root.$on("escapekey", this.close);
-		this.$root.$on("confirm-dialog", this.open);
+		eventbus.on("escapekey", this.close);
+		eventbus.on("confirm-dialog", this.open);
 	},
 	destroyed() {
-		this.$root.$off("escapekey", this.close);
-		this.$root.$off("confirm-dialog", this.open);
+		eventbus.off("escapekey", this.close);
+		eventbus.off("confirm-dialog", this.open);
 	},
 	methods: {
 		open(data, callback) {

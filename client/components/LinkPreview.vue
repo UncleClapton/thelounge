@@ -130,6 +130,7 @@
 </template>
 
 <script>
+import eventbus from "../js/eventbus";
 import friendlysize from "../js/helpers/friendlysize";
 
 export default {
@@ -137,6 +138,7 @@ export default {
 	props: {
 		link: Object,
 		keepScrollPosition: Function,
+		channel: Object,
 	},
 	data() {
 		return {
@@ -166,12 +168,12 @@ export default {
 		this.updateShownState();
 	},
 	mounted() {
-		this.$root.$on("resize", this.handleResize);
+		eventbus.on("resize", this.handleResize);
 
 		this.onPreviewUpdate();
 	},
 	beforeDestroy() {
-		this.$root.$off("resize", this.handleResize);
+		eventbus.off("resize", this.handleResize);
 	},
 	destroyed() {
 		// Let this preview go through load/canplay events again,
@@ -214,6 +216,7 @@ export default {
 			e.preventDefault();
 
 			const imageViewer = this.$root.$refs.app.$refs.imageViewer;
+			imageViewer.channel = this.channel;
 			imageViewer.link = this.link;
 		},
 		onMoreClick() {

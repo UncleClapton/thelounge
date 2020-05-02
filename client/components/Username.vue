@@ -11,6 +11,7 @@
 </template>
 
 <script>
+import eventbus from "../js/eventbus";
 import colorClass from "../js/helpers/colorClass";
 
 export default {
@@ -24,8 +25,9 @@ export default {
 		nickColor() {
 			if (this.$store.state.settings.coloredNicks === "regex") {
 				const colorRules = Object.values(this.$store.state.settings.nickColorRules);
-				const userString = `${this.user.nick}!${this.user.ident || ""}@${this.user
-					.hostname || ""}`;
+				const userString = `${this.user.nick}!${this.user.ident || ""}@${
+					this.user.hostname || ""
+				}`;
 
 				for (const rule of colorRules) {
 					if (userString.includes(rule.pattern)) {
@@ -44,7 +46,7 @@ export default {
 			return this.onHover(this.user);
 		},
 		openContextMenu(event) {
-			this.$root.$emit("contextmenu:user", {
+			eventbus.emit("contextmenu:user", {
 				event: event,
 				user: this.user,
 			});

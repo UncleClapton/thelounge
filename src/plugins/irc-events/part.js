@@ -3,10 +3,10 @@
 const _ = require("lodash");
 const Msg = require("../../models/msg");
 
-module.exports = function(irc, network) {
+module.exports = function (irc, network) {
 	const client = this;
 
-	irc.on("part", function(data) {
+	irc.on("part", function (data) {
 		const chan = network.getChannel(data.channel);
 
 		if (typeof chan === "undefined") {
@@ -33,9 +33,6 @@ module.exports = function(irc, network) {
 			});
 		} else {
 			chan.removeUser(user);
-			client.emit("users", {
-				chan: chan.id,
-			});
 		}
 	});
 };

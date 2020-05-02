@@ -41,6 +41,11 @@
 							:text="channel.topic"
 					/></span>
 					<button
+						class="mentions"
+						aria-label="Open your mentions"
+						@click="openMentions"
+					/>
+					<button
 						class="menu"
 						aria-label="Open the context menu"
 						@click="openContextMenu"
@@ -61,7 +66,7 @@
 					<div class="chat">
 						<div class="messages">
 							<div class="msg">
-								<Component
+								<component
 									:is="specialComponent"
 									:network="network"
 									:channel="channel"
@@ -103,6 +108,7 @@
 
 <script>
 import socket from "../js/socket";
+import eventbus from "../js/eventbus";
 import ParsedMessage from "./ParsedMessage.vue";
 import MessageList from "./MessageList.vue";
 import ChatInput from "./ChatInput.vue";
@@ -198,10 +204,15 @@ export default {
 			}
 		},
 		openContextMenu(event) {
-			this.$root.$emit("contextmenu:channel", {
+			eventbus.emit("contextmenu:channel", {
 				event: event,
 				channel: this.channel,
 				network: this.network,
+			});
+		},
+		openMentions() {
+			eventbus.emit("mentions:toggle", {
+				event: event,
 			});
 		},
 	},

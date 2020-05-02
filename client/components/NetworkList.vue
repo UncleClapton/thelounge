@@ -82,7 +82,7 @@
 					:is-join-channel-shown="network.isJoinChannelShown"
 					:active="
 						$store.state.activeChannel &&
-							network.channels[0] === $store.state.activeChannel.channel
+						network.channels[0] === $store.state.activeChannel.channel
 					"
 					@toggleJoinChannel="network.isJoinChannelShown = !network.isJoinChannelShown"
 				/>
@@ -106,17 +106,18 @@
 					@start="onDragStart"
 					@end="onDragEnd"
 				>
-					<Channel
-						v-for="(channel, index) in network.channels"
-						v-if="index > 0"
-						:key="channel.id"
-						:channel="channel"
-						:network="network"
-						:active="
-							$store.state.activeChannel &&
+					<template v-for="(channel, index) in network.channels">
+						<Channel
+							v-if="index > 0"
+							:key="channel.id"
+							:channel="channel"
+							:network="network"
+							:active="
+								$store.state.activeChannel &&
 								channel === $store.state.activeChannel.channel
-						"
-					/>
+							"
+						/>
+					</template>
 				</Draggable>
 			</div>
 		</Draggable>

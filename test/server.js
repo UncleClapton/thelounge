@@ -9,20 +9,20 @@ const io = require("socket.io-client");
 const util = require("./util");
 const changelog = require("../src/plugins/changelog");
 
-describe("Server", function() {
+describe("Server", function () {
 	// Increase timeout due to unpredictable I/O on CI services
 	this.timeout(util.isRunningOnCI() ? 25000 : 5000);
 
 	let server;
 
-	before(function() {
+	before(function () {
 		stub(log, "info");
 		stub(changelog, "checkForUpdates");
 
 		server = require("../src/server")();
 	});
 
-	after(function(done) {
+	after(function (done) {
 		server.close(done);
 		log.info.restore();
 		changelog.checkForUpdates.restore();
@@ -48,7 +48,7 @@ describe("Server", function() {
 		});
 	});
 
-	describe("WebSockets", function() {
+	describe("WebSockets", function () {
 		this.slow(300);
 
 		let client;
@@ -113,7 +113,6 @@ describe("Server", function() {
 				expect(data.defaultTheme).to.equal("default");
 				expect(data.themes).to.be.an("array");
 				expect(data.lockNetwork).to.equal(false);
-				expect(data.displayNetwork).to.equal(true);
 				expect(data.useHexIp).to.equal(false);
 
 				done();

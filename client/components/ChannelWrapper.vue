@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import eventbus from "../js/eventbus";
 import isChannelCollapsed from "../js/helpers/isChannelCollapsed";
 
 export default {
@@ -76,7 +77,7 @@ export default {
 			this.$root.switchToChannel(this.channel);
 		},
 		openContextMenu(event) {
-			this.$root.$emit("contextmenu:channel", {
+			eventbus.emit("contextmenu:channel", {
 				event: event,
 				channel: this.channel,
 				network: this.network,

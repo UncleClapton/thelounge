@@ -2,10 +2,10 @@
 
 const Msg = require("../../models/msg");
 
-module.exports = function(irc, network) {
+module.exports = function (irc, network) {
 	const client = this;
 
-	irc.on("quit", function(data) {
+	irc.on("quit", function (data) {
 		network.channels.forEach((chan) => {
 			const user = chan.findUser(data.nick);
 
@@ -23,9 +23,6 @@ module.exports = function(irc, network) {
 			chan.pushMessage(client, msg);
 
 			chan.removeUser(user);
-			client.emit("users", {
-				chan: chan.id,
-			});
 		});
 
 		// If user with the nick we are trying to keep has quit, try to get this nick

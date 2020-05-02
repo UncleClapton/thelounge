@@ -570,6 +570,12 @@
 	</div>
 </template>
 
+<style>
+textarea#user-specified-css-input {
+	height: 100px;
+}
+</style>
+
 <script>
 import socket from "../../js/socket";
 import webpush from "../../js/webpush";
