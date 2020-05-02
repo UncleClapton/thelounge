@@ -42,6 +42,7 @@ export default {
 			// TODO: move networks to vuex and update state when the network info comes in
 			const network = this.$store.getters.findNetwork(data.uuid);
 			network.name = network.channels[0].name = data.name;
+			network.userListOrder = data.userListOrder;
 
 			this.$root.switchToChannel(network.channels[0]);
 		},
