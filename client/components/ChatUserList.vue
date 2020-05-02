@@ -20,33 +20,29 @@
 			/>
 		</div>
 		<div class="names">
-			<div
-				v-for="(users, name) in groupedUsers"
-				v-if="users"
-				:key="name"
-				class="user-mode"
-				:data-modename="name"
-			>
-				<template v-if="userSearchInput.length > 0">
-					<Username
-						v-for="user in users"
-						:key="user.original.nick"
-						:on-hover="hoverUser"
-						:active="user.original === activeUser"
-						:user="user.original"
-						v-html="user.original.mode + user.string"
-					/>
-				</template>
-				<template v-else>
-					<Username
-						v-for="user in users"
-						:key="user.nick"
-						:on-hover="hoverUser"
-						:active="user === activeUser"
-						:user="user"
-					/>
-				</template>
-			</div>
+			<template v-for="(users, name) in groupedUsers">
+				<div v-if="users" :key="name" class="user-mode" :data-modename="name">
+					<template v-if="userSearchInput.length > 0">
+						<Username
+							v-for="user in users"
+							:key="user.original.nick"
+							:on-hover="hoverUser"
+							:active="user.original === activeUser"
+							:user="user.original"
+							v-html="user.original.mode + user.string"
+						/>
+					</template>
+					<template v-else>
+						<Username
+							v-for="user in users"
+							:key="user.nick"
+							:on-hover="hoverUser"
+							:active="user === activeUser"
+							:user="user"
+						/>
+					</template>
+				</div>
+			</template>
 		</div>
 	</aside>
 </template>
