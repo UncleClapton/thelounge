@@ -24,7 +24,9 @@
 		:aria-selected="active"
 		:style="channel.closed ? {transition: 'none', opacity: 0.4} : null"
 		role="tab"
-		@click="click"
+		@mousedown.middle.prevent
+		@mouseup.middle="close"
+		@click.left="click"
 		@contextmenu.prevent="openContextMenu"
 	>
 		<slot :network="network" :channel="channel" :activeChannel="activeChannel" />
@@ -75,6 +77,9 @@ export default {
 			}
 
 			this.$root.switchToChannel(this.channel);
+		},
+		close() {
+			this.$root.closeChannel(this.channel);
 		},
 		openContextMenu(event) {
 			eventbus.emit("contextmenu:channel", {
