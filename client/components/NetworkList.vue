@@ -2,7 +2,7 @@
 	<div v-if="$store.state.networks.length === 0" class="empty">
 		You are not connected to any networks yet.
 	</div>
-	<div v-else ref="networklist">
+	<div v-else ref="networklist" class="network-list">
 		<div class="jump-to-input">
 			<input
 				ref="searchInput"
@@ -60,7 +60,7 @@
 			ghost-class="ui-sortable-ghost"
 			drag-class="ui-sortable-dragged"
 			group="networks"
-			class="networks"
+			class="networks scrollable-area"
 			@change="onNetworkSort"
 			@start="onDragStart"
 			@end="onDragEnd"

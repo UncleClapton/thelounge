@@ -728,6 +728,12 @@ p {
 	display: none;
 }
 
+#sidebar .network-list {
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
 .channel-list-item,
 #sidebar .empty {
 	font-size: 14px;
