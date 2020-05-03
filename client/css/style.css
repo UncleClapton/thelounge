@@ -303,7 +303,6 @@ p {
 
 .input.nick-color-picker {
 	background: var(--window-bg-color);
-	border-width: 2px;
 }
 
 .input.nick-color-picker > option {
