@@ -98,20 +98,23 @@
 				</div>
 			</template>
 
-			<div v-if="$store.state.settings.advanced">
+			<template v-if="$store.state.settings.advanced">
 				<h2>User List Ordering</h2>
 				<span
 					>Format:
 					<pre>Group Name:nick!ident@vhost,nick!ident@vhost,...</pre>
 				</span>
-				<textarea
-					id="connect:userListOrder"
-					class="input"
-					name="userListOrder"
-					placeholder="One group per line, Format is <Group Name>:nick!ident@vhost,nick!ident@vhost. "
-					:value="defaults.userListOrder"
-				/>
-			</div>
+				<div class="connect-row">
+					<textarea
+						id="connect:userListOrder"
+						class="input"
+						style="height: 350px;"
+						name="userListOrder"
+						placeholder="One group per line, Format is <Group Name>:nick!ident@vhost,nick!ident@vhost. "
+						:value="defaults.userListOrder"
+					/>
+				</div>
+			</template>
 
 			<h2>User preferences</h2>
 			<div class="connect-row">
