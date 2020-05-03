@@ -24,8 +24,8 @@
 		:aria-selected="active"
 		:style="channel.closed ? {transition: 'none', opacity: 0.4} : null"
 		role="tab"
-		@mousedown.middle.prevent
-		@mouseup.middle="close"
+		@mousedown.middle.capture.stop.prevent="stopscroll"
+		@mouseup.middle.prevent="close"
 		@click.left="click"
 		@contextmenu.prevent="openContextMenu"
 	>
@@ -70,6 +70,9 @@ export default {
 			}
 
 			return this.channel.name;
+		},
+		stopscroll() {
+			return false;
 		},
 		click() {
 			if (this.isFiltering) {
