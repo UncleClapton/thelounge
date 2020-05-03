@@ -3,10 +3,10 @@
 const Msg = require("../../models/msg");
 const Helper = require("../../helper");
 
-module.exports = function(irc, network) {
+module.exports = function (irc, network) {
 	const client = this;
 
-	irc.on("irc error", function(data) {
+	irc.on("irc error", function (data) {
 		const msg = new Msg({
 			type: Msg.Type.ERROR,
 			error: data.error,
@@ -33,7 +33,7 @@ module.exports = function(irc, network) {
 		target.pushMessage(client, msg, true);
 	});
 
-	irc.on("nick in use", function(data) {
+	irc.on("nick in use", function (data) {
 		let message = data.nick + ": " + (data.reason || "Nickname is already in use.");
 
 		if (irc.connection.registered === false && !Helper.config.public) {
@@ -55,8 +55,14 @@ module.exports = function(irc, network) {
 		lobby.pushMessage(client, msg, true);
 
 		if (irc.connection.registered === false) {
+			const nickLen = parseInt(network.irc.network.options.NICKLEN, 10) || 16;
 			const random = (data.nick || irc.user.nick) + Math.floor(Math.random() * 10);
-			irc.changeNick(random);
+
+			// Safeguard nick changes up to allowed length
+			// Some servers may send "nick in use" error even for randomly generated nicks
+			if (random.length <= nickLen) {
+				irc.changeNick(random);
+			}
 		}
 
 		client.emit("nick", {
@@ -65,7 +71,7 @@ module.exports = function(irc, network) {
 		});
 	});
 
-	irc.on("nick invalid", function(data) {
+	irc.on("nick invalid", function (data) {
 		const lobby = network.channels[0];
 		const msg = new Msg({
 			type: Msg.Type.ERROR,

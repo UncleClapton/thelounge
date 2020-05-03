@@ -341,10 +341,12 @@ p {
 
 #viewport .lt::before,
 #viewport .rt::before,
+#chat button.mentions::before,
 #chat button.menu::before,
 .channel-list-item::before,
 #footer .icon,
 #chat .count::before,
+#connect .extra-help,
 #settings .extra-help,
 #settings #play::before,
 #form #upload::before,
@@ -367,6 +369,7 @@ p {
 #chat .msg[data-type="action"] .from::before,
 #chat .msg[data-type="plugin"] .from::before,
 #chat .msg[data-type="raw"] .from::before,
+#chat .msg-statusmsg span::before,
 #chat .msg-shown-in-active span::before,
 #chat .toggle-button::after,
 #chat .toggle-content .more-caret::before,
@@ -401,6 +404,7 @@ p {
 
 #viewport .rt::before { content: "\f0c0"; /* https://fontawesome.com/icons/users?style=solid */ }
 #chat button.menu::before { content: "\f142"; /* http://fontawesome.io/icon/ellipsis-v/ */ }
+#chat button.mentions::before { content: "\f1fa"; /* https://fontawesome.com/icons/at?style=solid */ }
 
 .context-menu-join::before { content: "\f067"; /* http://fontawesome.io/icon/plus/ */ }
 .context-menu-user::before { content: "\f007"; /* http://fontawesome.io/icon/user/ */ }
@@ -545,14 +549,23 @@ p {
 	padding: 1px;
 }
 
+#chat .msg-statusmsg,
 #chat .msg-shown-in-active {
 	cursor: help;
 	margin-right: 5px;
 }
 
+#chat .msg-statusmsg span::before,
 #chat .msg-shown-in-active span::before {
 	font-size: 10px;
 	content: "\f06e"; /* https://fontawesome.com/icons/eye?style=solid */
+}
+
+#chat .msg-statusmsg {
+	border-radius: 2px;
+	padding: 2px 4px;
+	background-color: #ff9e18;
+	color: #222;
 }
 
 #chat .toggle-button {
@@ -576,6 +589,7 @@ p {
 	line-height: 45px;
 }
 
+#connect .extra-help::before,
 #settings .extra-help::before {
 	content: "\f059"; /* http://fontawesome.io/icon/question-circle/ */
 }
@@ -619,6 +633,7 @@ p {
 .header .button.close,
 #viewport .lt,
 #viewport .rt,
+#chat button.mentions,
 #chat button.menu {
 	color: #607992;
 	display: flex;
@@ -633,6 +648,7 @@ p {
 .header .button.close::before,
 #viewport .lt::before,
 #viewport .rt::before,
+#chat button.mentions::before,
 #chat button.menu::before {
 	width: 36px;
 	line-height: 36px; /* Fix alignment in Microsoft Edge */
@@ -710,6 +726,12 @@ p {
 
 #sidebar .logo {
 	display: none;
+}
+
+#sidebar .network-list {
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
 }
 
 .channel-list-item,
@@ -1015,7 +1037,6 @@ background on hover (unless active) */
 
 textarea.input {
 	resize: vertical;
-	height: 100px;
 	min-height: 35px;
 	padding: 6px 10px;
 	line-height: 1.5;
@@ -1760,6 +1781,7 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 }
 
 #chat .user-mode::before {
+	content: attr(data-modename);
 	background: var(--window-bg-color);
 	color: var(--body-color-muted);
 	display: block;
@@ -1904,8 +1926,8 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 }
 
 #connect .btn {
-	margin-left: 25%;
 	margin-top: 15px;
+	width: 100%;
 }
 
 #settings .apple-push-unsupported,
@@ -1952,6 +1974,7 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 	margin-right: 6px;
 }
 
+#connect .extra-help,
 #settings .extra-help {
 	cursor: help;
 }
@@ -2253,6 +2276,7 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 	opacity: 0.5;
 }
 
+#mentions-popup-container,
 #context-menu-container {
 	position: absolute;
 	top: 0;
@@ -2263,6 +2287,7 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 	background: transparent;
 }
 
+.mentions-popup,
 #context-menu,
 .textcomplete-menu {
 	position: absolute;
@@ -2700,11 +2725,6 @@ part/quit messages where we don't load previews (adds a blank line otherwise) */
 	#connect .connect-row > .input,
 	#connect .connect-row > .input-wrap {
 		flex-grow: 1;
-	}
-
-	#connect .btn {
-		margin-left: 0;
-		width: 100%;
 	}
 
 	#help .help-version-title {

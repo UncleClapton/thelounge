@@ -3,10 +3,10 @@
 const Chan = require("../../models/chan");
 const Msg = require("../../models/msg");
 
-module.exports = function(irc, network) {
+module.exports = function (irc, network) {
 	const client = this;
 
-	irc.on("kick", function(data) {
+	irc.on("kick", function (data) {
 		const chan = network.getChannel(data.channel);
 
 		if (typeof chan === "undefined") {
@@ -35,9 +35,5 @@ module.exports = function(irc, network) {
 		} else {
 			chan.removeUser(msg.target);
 		}
-
-		client.emit("users", {
-			chan: chan.id,
-		});
 	});
 };

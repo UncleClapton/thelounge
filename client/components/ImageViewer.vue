@@ -9,6 +9,20 @@
 	>
 		<template v-if="link !== null">
 			<button class="close-btn" aria-label="Close"></button>
+
+			<button
+				v-if="previousImage"
+				class="previous-image-btn"
+				aria-label="Previous image"
+				@click.stop="previous"
+			></button>
+			<button
+				v-if="nextImage"
+				class="next-image-btn"
+				aria-label="Next image"
+				@click.stop="next"
+			></button>
+
 			<a class="open-btn" :href="link.link" target="_blank" rel="noopener"></a>
 
 			<img
@@ -25,12 +39,19 @@
 </template>
 
 <script>
+import Mousetrap from "mousetrap";
+import eventbus from "../js/eventbus";
+
 export default {
 	name: "ImageViewer",
 	data() {
 		return {
 			closing: false,
 			link: null,
+			previousImage: null,
+			nextImage: null,
+			channel: null,
+
 			position: {
 				x: 0,
 				y: 0,
@@ -57,20 +78,25 @@ export default {
 		},
 	},
 	watch: {
-		link() {
+		link(newLink, oldLink) {
 			// TODO: history.pushState
-			if (this.link === null) {
+			if (newLink === null) {
+				eventbus.off("escapekey", this.closeViewer);
+				eventbus.off("resize", this.correctPosition);
+				Mousetrap.unbind("left", this.previous);
+				Mousetrap.unbind("right", this.next);
 				return;
 			}
 
-			this.$root.$on("resize", this.correctPosition);
+			this.setPrevNextImages();
+
+			if (!oldLink) {
+				eventbus.on("escapekey", this.closeViewer);
+				eventbus.on("resize", this.correctPosition);
+				Mousetrap.bind("left", this.previous);
+				Mousetrap.bind("right", this.next);
+			}
 		},
-	},
-	mounted() {
-		this.$root.$on("escapekey", this.closeViewer);
-	},
-	destroyed() {
-		this.$root.$off("escapekey", this.closeViewer);
 	},
 	methods: {
 		closeViewer() {
@@ -82,9 +108,37 @@ export default {
 			this.closing = true;
 
 			setTimeout(() => {
+				this.channel = null;
+				this.previousImage = null;
+				this.nextImage = null;
 				this.link = null;
 				this.closing = false;
 			}, 200);
+		},
+		setPrevNextImages() {
+			if (!this.channel) {
+				return null;
+			}
+
+			const links = this.channel.messages
+				.map((msg) => msg.previews)
+				.flat()
+				.filter((preview) => preview.thumb);
+
+			const currentIndex = links.indexOf(this.link);
+
+			this.previousImage = links[currentIndex - 1] || null;
+			this.nextImage = links[currentIndex + 1] || null;
+		},
+		previous() {
+			if (this.previousImage) {
+				this.link = this.previousImage;
+			}
+		},
+		next() {
+			if (this.nextImage) {
+				this.link = this.nextImage;
+			}
 		},
 		onImageLoad() {
 			this.prepareImage();

@@ -2,7 +2,7 @@
 	<div v-if="$store.state.networks.length === 0" class="empty">
 		You are not connected to any networks yet.
 	</div>
-	<div v-else ref="networklist">
+	<div v-else ref="networklist" class="network-list">
 		<div class="jump-to-input">
 			<input
 				ref="searchInput"
@@ -60,7 +60,7 @@
 			ghost-class="ui-sortable-ghost"
 			drag-class="ui-sortable-dragged"
 			group="networks"
-			class="networks"
+			class="networks scrollable-area"
 			@change="onNetworkSort"
 			@start="onDragStart"
 			@end="onDragEnd"
@@ -82,7 +82,7 @@
 					:is-join-channel-shown="network.isJoinChannelShown"
 					:active="
 						$store.state.activeChannel &&
-							network.channels[0] === $store.state.activeChannel.channel
+						network.channels[0] === $store.state.activeChannel.channel
 					"
 					@toggleJoinChannel="network.isJoinChannelShown = !network.isJoinChannelShown"
 				/>
@@ -106,17 +106,18 @@
 					@start="onDragStart"
 					@end="onDragEnd"
 				>
-					<Channel
-						v-for="(channel, index) in network.channels"
-						v-if="index > 0"
-						:key="channel.id"
-						:channel="channel"
-						:network="network"
-						:active="
-							$store.state.activeChannel &&
+					<template v-for="(channel, index) in network.channels">
+						<Channel
+							v-if="index > 0"
+							:key="channel.id"
+							:channel="channel"
+							:network="network"
+							:active="
+								$store.state.activeChannel &&
 								channel === $store.state.activeChannel.channel
-						"
-					/>
+							"
+						/>
+					</template>
 				</Draggable>
 			</div>
 		</Draggable>

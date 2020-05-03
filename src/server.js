@@ -17,22 +17,19 @@ const net = require("net");
 const Identification = require("./identification");
 const changelog = require("./plugins/changelog");
 const inputs = require("./plugins/inputs");
+const Auth = require("./plugins/auth");
 
 const themes = require("./plugins/packages/themes");
 themes.loadLocalThemes();
 
 const packages = require("./plugins/packages/index");
 
-// The order defined the priority: the first available plugin is used
-// ALways keep local auth in the end, which should always be enabled.
-const authPlugins = [require("./plugins/auth/ldap"), require("./plugins/auth/local")];
-
 // A random number that will force clients to reload the page if it differs
 const serverHash = Math.floor(Date.now() * Math.random());
 
 let manager = null;
 
-module.exports = function(options = {}) {
+module.exports = function (options = {}) {
 	log.info(`The Lounge ${colors.green(Helper.getVersion())} \
 (Node.js ${colors.green(process.versions.node)} on ${colors.green(process.platform)} ${
 		process.arch
@@ -206,7 +203,7 @@ module.exports = function(options = {}) {
 		// Handle ctrl+c and kill gracefully
 		let suicideTimeout = null;
 
-		const exitGracefully = function() {
+		const exitGracefully = function () {
 			if (suicideTimeout !== null) {
 				return;
 			}
@@ -361,7 +358,7 @@ function initializeClient(socket, client, token, lastMessage, openChannel) {
 		new Uploader(socket);
 	}
 
-	socket.on("disconnect", function() {
+	socket.on("disconnect", function () {
 		process.nextTick(() => client.clientDetach(socket.id));
 	});
 
@@ -536,6 +533,21 @@ function initializeClient(socket, client, token, lastMessage, openChannel) {
 		}
 	});
 
+	socket.on("mentions:get", () => {
+		socket.emit("mentions:list", client.mentions);
+	});
+
+	socket.on("mentions:hide", (msgId) => {
+		if (typeof msgId !== "number") {
+			return;
+		}
+
+		client.mentions.splice(
+			client.mentions.findIndex((m) => m.msgId === msgId),
+			1
+		);
+	});
+
 	if (!Helper.config.public) {
 		socket.on("push:register", (subscription) => {
 			if (!Object.prototype.hasOwnProperty.call(client.config.sessions, token)) {
@@ -686,18 +698,12 @@ function initializeClient(socket, client, token, lastMessage, openChannel) {
 }
 
 function getClientConfiguration() {
-	const config = _.pick(Helper.config, [
-		"public",
-		"lockNetwork",
-		"displayNetwork",
-		"useHexIp",
-		"prefetch",
-	]);
+	const config = _.pick(Helper.config, ["public", "lockNetwork", "useHexIp", "prefetch"]);
 
 	config.fileUpload = Helper.config.fileUpload.enable;
 	config.ldapEnabled = Helper.config.ldap.enable;
 
-	if (config.displayNetwork) {
+	if (!config.lockNetwork) {
 		config.defaults = _.clone(Helper.config.defaults);
 	} else {
 		// Only send defaults that are visible on the client
@@ -718,6 +724,9 @@ function getClientConfiguration() {
 	config.themes = themes.getAll();
 	config.defaultTheme = Helper.config.theme;
 	config.defaults.nick = Helper.getDefaultNick();
+	config.defaults.sasl = "";
+	config.defaults.saslAccount = "";
+	config.defaults.saslPassword = "";
 
 	if (Uploader) {
 		config.fileUploadMaxFileSize = Uploader.getMaxFileSize();
@@ -780,7 +789,7 @@ function performAuthentication(data) {
 		client = new Client(manager);
 		manager.clients.push(client);
 
-		socket.on("disconnect", function() {
+		socket.on("disconnect", function () {
 			manager.clients = _.without(manager.clients, client);
 			client.quit();
 		});
@@ -834,18 +843,7 @@ function performAuthentication(data) {
 	}
 
 	// Perform password checking
-	let auth = () => {
-		log.error("None of the auth plugins is enabled");
-	};
-
-	for (let i = 0; i < authPlugins.length; ++i) {
-		if (authPlugins[i].isEnabled()) {
-			auth = authPlugins[i].auth;
-			break;
-		}
-	}
-
-	auth(manager, client, data.user, data.password, authCallback);
+	Auth.auth(manager, client, data.user, data.password, authCallback);
 }
 
 function reverseDnsLookup(ip, callback) {

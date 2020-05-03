@@ -56,6 +56,7 @@ function Client(manager, name, config = {}) {
 		idMsg: 1,
 		name: name,
 		networks: [],
+		mentions: [],
 		manager: manager,
 		messageStorage: [],
 		highlightRegex: null,
@@ -138,20 +139,20 @@ function Client(manager, name, config = {}) {
 	}
 }
 
-Client.prototype.createChannel = function(attr) {
+Client.prototype.createChannel = function (attr) {
 	const chan = new Chan(attr);
 	chan.id = this.idChan++;
 
 	return chan;
 };
 
-Client.prototype.emit = function(event, data) {
+Client.prototype.emit = function (event, data) {
 	if (this.manager !== null) {
 		this.manager.sockets.in(this.id).emit(event, data);
 	}
 };
 
-Client.prototype.find = function(channelId) {
+Client.prototype.find = function (channelId) {
 	let network = null;
 	let chan = null;
 
@@ -172,7 +173,7 @@ Client.prototype.find = function(channelId) {
 	return false;
 };
 
-Client.prototype.connect = function(args, isStartup = false) {
+Client.prototype.connect = function (args, isStartup = false) {
 	const client = this;
 	let channels = [];
 
@@ -226,17 +227,21 @@ Client.prototype.connect = function(args, isStartup = false) {
 	const network = new Network({
 		uuid: args.uuid,
 		name: String(
-			args.name || (Helper.config.displayNetwork ? "" : Helper.config.defaults.name) || ""
+			args.name || (Helper.config.lockNetwork ? Helper.config.defaults.name : "") || ""
 		),
 		host: String(args.host || ""),
 		port: parseInt(args.port, 10),
 		tls: !!args.tls,
 		userDisconnected: !!args.userDisconnected,
 		rejectUnauthorized: !!args.rejectUnauthorized,
+		userListOrder: String(args.userListOrder || ""),
 		password: String(args.password || ""),
 		nick: String(args.nick || ""),
 		username: String(args.username || ""),
 		realname: String(args.realname || ""),
+		sasl: String(args.sasl || ""),
+		saslAccount: String(args.saslAccount || ""),
+		saslPassword: String(args.saslPassword || ""),
 		commands: args.commands || [],
 		channels: channels,
 		ignoreList: args.ignoreList ? args.ignoreList : [],
@@ -279,7 +284,7 @@ Client.prototype.connect = function(args, isStartup = false) {
 	}
 };
 
-Client.prototype.generateToken = function(callback) {
+Client.prototype.generateToken = function (callback) {
 	crypto.randomBytes(64, (err, buf) => {
 		if (err) {
 			throw err;
@@ -289,14 +294,11 @@ Client.prototype.generateToken = function(callback) {
 	});
 };
 
-Client.prototype.calculateTokenHash = function(token) {
-	return crypto
-		.createHash("sha512")
-		.update(token)
-		.digest("hex");
+Client.prototype.calculateTokenHash = function (token) {
+	return crypto.createHash("sha512").update(token).digest("hex");
 };
 
-Client.prototype.updateSession = function(token, ip, request) {
+Client.prototype.updateSession = function (token, ip, request) {
 	const client = this;
 	const agent = UAParser(request.headers["user-agent"] || "");
 	let friendlyAgent = "";
@@ -324,12 +326,12 @@ Client.prototype.updateSession = function(token, ip, request) {
 	client.save();
 };
 
-Client.prototype.setPassword = function(hash, callback) {
+Client.prototype.setPassword = function (hash, callback) {
 	const client = this;
 
 	const oldHash = client.config.password;
 	client.config.password = hash;
-	client.manager.saveUser(client, function(err) {
+	client.manager.saveUser(client, function (err) {
 		if (err) {
 			// If user file fails to write, reset it back
 			client.config.password = oldHash;
@@ -340,7 +342,7 @@ Client.prototype.setPassword = function(hash, callback) {
 	});
 };
 
-Client.prototype.input = function(data) {
+Client.prototype.input = function (data) {
 	const client = this;
 	data.text.split("\n").forEach((line) => {
 		data.text = line;
@@ -348,7 +350,7 @@ Client.prototype.input = function(data) {
 	});
 };
 
-Client.prototype.inputLine = function(data) {
+Client.prototype.inputLine = function (data) {
 	const client = this;
 	const target = client.find(data.target);
 
@@ -420,7 +422,7 @@ Client.prototype.inputLine = function(data) {
 	}
 };
 
-Client.prototype.compileCustomHighlights = function() {
+Client.prototype.compileCustomHighlights = function () {
 	const client = this;
 
 	if (typeof client.config.clientSettings.highlights !== "string") {
@@ -446,7 +448,7 @@ Client.prototype.compileCustomHighlights = function() {
 	);
 };
 
-Client.prototype.more = function(data) {
+Client.prototype.more = function (data) {
 	const client = this;
 	const target = client.find(data.target);
 
@@ -501,7 +503,7 @@ Client.prototype.more = function(data) {
 	};
 };
 
-Client.prototype.clearHistory = function(data) {
+Client.prototype.clearHistory = function (data) {
 	const client = this;
 	const target = client.find(data.target);
 
@@ -527,7 +529,7 @@ Client.prototype.clearHistory = function(data) {
 	}
 };
 
-Client.prototype.open = function(socketId, target) {
+Client.prototype.open = function (socketId, target) {
 	// Due to how socket.io works internally, normal events may arrive later than
 	// the disconnect event, and because we can't control this timing precisely,
 	// process this event normally even if there is no attached client anymore.
@@ -558,7 +560,7 @@ Client.prototype.open = function(socketId, target) {
 	this.emit("open", target.chan.id);
 };
 
-Client.prototype.sort = function(data) {
+Client.prototype.sort = function (data) {
 	const order = data.order;
 
 	if (!_.isArray(order)) {
@@ -610,7 +612,7 @@ Client.prototype.sort = function(data) {
 	this.save();
 };
 
-Client.prototype.names = function(data) {
+Client.prototype.names = function (data) {
 	const client = this;
 	const target = client.find(data.target);
 
@@ -624,7 +626,7 @@ Client.prototype.names = function(data) {
 	});
 };
 
-Client.prototype.quit = function(signOut) {
+Client.prototype.quit = function (signOut) {
 	const sockets = this.manager.sockets.sockets;
 	const room = sockets.adapter.rooms[this.id];
 
@@ -652,11 +654,11 @@ Client.prototype.quit = function(signOut) {
 	}
 };
 
-Client.prototype.clientAttach = function(socketId, token) {
+Client.prototype.clientAttach = function (socketId, token) {
 	const client = this;
 
 	if (client.awayMessage && _.size(client.attachedClients) === 0) {
-		client.networks.forEach(function(network) {
+		client.networks.forEach(function (network) {
 			// Only remove away on client attachment if
 			// there is no away message on this network
 			if (network.irc && !network.awayMessage) {
@@ -669,13 +671,13 @@ Client.prototype.clientAttach = function(socketId, token) {
 	client.attachedClients[socketId] = {token, openChannel};
 };
 
-Client.prototype.clientDetach = function(socketId) {
+Client.prototype.clientDetach = function (socketId) {
 	const client = this;
 
 	delete this.attachedClients[socketId];
 
 	if (client.awayMessage && _.size(client.attachedClients) === 0) {
-		client.networks.forEach(function(network) {
+		client.networks.forEach(function (network) {
 			// Only set away on client deattachment if
 			// there is no away message on this network
 			if (network.irc && !network.awayMessage) {
@@ -685,7 +687,7 @@ Client.prototype.clientDetach = function(socketId) {
 	}
 };
 
-Client.prototype.registerPushSubscription = function(session, subscription, noSave) {
+Client.prototype.registerPushSubscription = function (session, subscription, noSave) {
 	if (
 		!_.isPlainObject(subscription) ||
 		!_.isPlainObject(subscription.keys) ||
@@ -715,7 +717,7 @@ Client.prototype.registerPushSubscription = function(session, subscription, noSa
 	return data;
 };
 
-Client.prototype.unregisterPushSubscription = function(token) {
+Client.prototype.unregisterPushSubscription = function (token) {
 	this.config.sessions[token].pushSubscription = null;
 	this.save();
 };

@@ -19,7 +19,7 @@
 		</template>
 		<template v-else-if="isAction()">
 			<span class="from"><span class="only-copy">*** </span></span>
-			<Component :is="messageComponent" :network="network" :message="message" />
+			<component :is="messageComponent" :network="network" :message="message" />
 		</template>
 		<template v-else-if="message.type === 'action'">
 			<span class="from"><span class="only-copy">* </span></span>
@@ -33,6 +33,7 @@
 					:key="preview.link"
 					:keep-scroll-position="keepScrollPosition"
 					:link="preview"
+					:channel="channel"
 				/>
 			</span>
 		</template>
@@ -65,6 +66,12 @@
 					class="msg-shown-in-active tooltipped tooltipped-e"
 					><span></span
 				></span>
+				<span
+					v-if="message.statusmsgGroup"
+					:aria-label="`This message was only shown to users with ${message.statusmsgGroup} mode`"
+					class="msg-statusmsg tooltipped tooltipped-e"
+					><span>{{ message.statusmsgGroup }}</span></span
+				>
 				<ParsedMessage
 					:network="network"
 					:message="message"
@@ -75,6 +82,7 @@
 					:key="preview.link"
 					:keep-scroll-position="keepScrollPosition"
 					:link="preview"
+					:channel="channel"
 				/>
 			</span>
 		</template>

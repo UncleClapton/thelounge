@@ -1,32 +1,30 @@
 <template>
 	<aside id="sidebar" ref="sidebar">
-		<div class="scrollable-area">
-			<div class="logo-container">
-				<img
-					:src="`img/logo-${isPublic() ? 'horizontal-' : ''}transparent-bg.svg`"
-					class="logo"
-					alt="The Lounge"
-				/>
-				<img
-					:src="`img/logo-${isPublic() ? 'horizontal-' : ''}transparent-bg-inverted.svg`"
-					class="logo-inverted"
-					alt="The Lounge"
-				/>
-				<span
-					v-if="isDevelopment"
-					title="The Lounge has been built in development mode"
-					:style="{
-						backgroundColor: '#ff9e18',
-						color: '#000',
-						padding: '2px',
-						borderRadius: '4px',
-						fontSize: '12px',
-					}"
-					>DEVELOPER</span
-				>
-			</div>
-			<NetworkList />
+		<div class="logo-container">
+			<img
+				:src="`img/logo-${isPublic() ? 'horizontal-' : ''}transparent-bg.svg`"
+				class="logo"
+				alt="The Lounge"
+			/>
+			<img
+				:src="`img/logo-${isPublic() ? 'horizontal-' : ''}transparent-bg-inverted.svg`"
+				class="logo-inverted"
+				alt="The Lounge"
+			/>
+			<span
+				v-if="isDevelopment"
+				title="The Lounge has been built in development mode"
+				:style="{
+					backgroundColor: '#ff9e18',
+					color: '#000',
+					padding: '2px',
+					borderRadius: '4px',
+					fontSize: '12px',
+				}"
+				>DEVELOPER</span
+			>
 		</div>
+		<NetworkList />
 		<footer id="footer">
 			<span
 				class="tooltipped tooltipped-n tooltipped-no-touch"

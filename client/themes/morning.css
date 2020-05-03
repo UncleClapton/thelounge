@@ -113,6 +113,7 @@ body {
 #viewport .lt,
 #viewport .rt,
 #viewport button.close,
+#chat button.mentions,
 #chat button.menu,
 #form #submit {
 	color: #b7c5d1;

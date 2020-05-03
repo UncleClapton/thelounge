@@ -152,6 +152,10 @@ module.exports = function (irc, network) {
 			}
 		}
 
+		if (data.group) {
+			msg.statusmsgGroup = data.group;
+		}
+
 		let match;
 
 		while ((match = nickRegExp.exec(data.message))) {
@@ -206,6 +210,22 @@ module.exports = function (irc, network) {
 				},
 				true
 			);
+		}
+
+		// Keep track of all mentions in channels for this client
+		if (msg.highlight && chan.type === Chan.Type.CHANNEL) {
+			client.mentions.push({
+				chanId: chan.id,
+				msgId: msg.id,
+				type: msg.type,
+				time: msg.time,
+				text: msg.text,
+				from: msg.from,
+			});
+
+			if (client.mentions.length > 100) {
+				client.mentions.splice(0, client.mentions.length - 100);
+			}
 		}
 	}
 };
