@@ -96,7 +96,7 @@ export default {
 		},
 	},
 	watch: {
-		network: (newVal, oldVal) => {
+		network(newVal, oldVal) {
 			if (newVal.userListOrder !== oldVal.userListOrder) {
 				this.userListOrder = new UserListOrder(newVal.userListOrder);
 			}
