@@ -65,7 +65,7 @@ This fork comes with a number of changes documented below. For now, only manual 
 
 - **Logging changes**
 
-      	- File logger splits channel logs up by month so individual files don't get impossible to load over time.
+- File logger splits channel logs up by month so individual files don't get impossible to load over time.
 
 - **"better" user info tracking** - TL only consistently tracks nick changes, and only does so for channels. This fork aims to "fix" some of these shortcommings for various features that rely on the whole user string, and not just the nick.
 
