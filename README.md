@@ -63,6 +63,10 @@ This fork comes with a number of changes documented below. For now, only manual 
   - Nicks can now be colored by user string matching rules (configurable in settings)
   - Users in the userlist can be grouped by user string matching rules (configurable in network settings)
 
+- **Logging changes**
+
+      	- File logger splits channel logs up by month so individual files don't get impossible to load over time.
+
 - **"better" user info tracking** - TL only consistently tracks nick changes, and only does so for channels. This fork aims to "fix" some of these shortcommings for various features that rely on the whole user string, and not just the nick.
 
   - tracks ident and vhost consistently, and makes great effort to keep them up to date when possible.

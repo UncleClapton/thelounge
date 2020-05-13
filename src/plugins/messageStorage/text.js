@@ -150,7 +150,10 @@ class TextFileMessageStorage {
 	}
 
 	static getChannelFileName(channel) {
-		return `${cleanFilename(channel.name)}.log`;
+		const date = new Date();
+		return `${cleanFilename(channel.name)}-${date.getFullYear()}-${(date.getMonth() + 1)
+			.toString()
+			.padStart(2, "0")}.log`;
 	}
 }
 
