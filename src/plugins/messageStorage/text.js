@@ -6,6 +6,7 @@ const path = require("path");
 const filenamify = require("filenamify");
 const Helper = require("../../helper");
 const Msg = require("../../models/msg");
+const Chan = require("../../models/chan");
 
 class TextFileMessageStorage {
 	constructor(client) {
@@ -149,11 +150,15 @@ class TextFileMessageStorage {
 		return `${networkName}-${network.uuid.substring(networkName.length + 1)}`;
 	}
 
-	static getChannelFileName(channel) {
+	static getMonthString() {
 		const date = new Date();
-		return `${cleanFilename(channel.name)}-${date.getFullYear()}-${(date.getMonth() + 1)
-			.toString()
-			.padStart(2, "0")}.log`;
+		return `-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}`;
+	}
+
+	static getChannelFileName(channel) {
+		return `${cleanFilename(channel.name)}${
+			channel.type === Chan.Type.CHANNEL ? TextFileMessageStorage.getMonthString() : ""
+		}.log`;
 	}
 }
 
