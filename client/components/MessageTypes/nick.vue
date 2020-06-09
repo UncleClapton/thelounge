@@ -1,8 +1,8 @@
 <template>
 	<span class="content">
-		<Username :user="message.from" />
+		<Username :user="{...message.from, nick: message.old_nick}" />
 		is now known as
-		<Username :user="{...message.from, nick: message.new_nick}" />
+		<Username :user="message.from" />
 	</span>
 </template>
 
@@ -17,6 +17,9 @@ export default {
 	props: {
 		network: Object,
 		message: Object,
+	},
+	created () {
+		console.log(this)
 	},
 };
 </script>

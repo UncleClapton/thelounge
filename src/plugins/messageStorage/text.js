@@ -70,7 +70,7 @@ class TextFileMessageStorage {
 				break;
 			case Msg.Type.NICK:
 				// [2014-01-01 00:00:00] *** Arnold changed nick to Bernie
-				line += `*** ${msg.from.nick} changed nick to ${msg.new_nick}`;
+				line += `*** ${msg.old_nick} changed nick to ${msg.from.nick}`;
 				break;
 			case Msg.Type.NOTICE:
 				// [2014-01-01 00:00:00] -Arnold- pssst, I have cookies!
