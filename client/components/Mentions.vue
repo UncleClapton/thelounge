@@ -5,7 +5,14 @@
 		@click="containerClick"
 		@contextmenu="containerClick"
 	>
-		<div class="mentions-popup">
+		<div
+		  :class="{
+				'mentions-popup': true,
+				'colored-nicks': ['hash', 'regex', true].includes(
+					$store.state.settings.coloredNicks
+				),
+			}"
+		>
 			<div class="mentions-popup-title">
 				Recent mentions
 			</div>
@@ -163,6 +170,7 @@ export default {
 	},
 	mounted() {
 		eventbus.on("mentions:toggle", this.openPopup);
+		console.log(this.$store.state.mentions)
 	},
 	destroyed() {
 		eventbus.off("mentions:toggle", this.openPopup);
