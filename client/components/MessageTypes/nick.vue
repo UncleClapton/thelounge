@@ -18,8 +18,5 @@ export default {
 		network: Object,
 		message: Object,
 	},
-	created () {
-		console.log(this)
-	},
 };
 </script>
