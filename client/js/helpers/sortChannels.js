@@ -1,4 +1,4 @@
-export default function sortChannels(chanA, chanB) {
+module.exports = function sortChannels(chanA, chanB) {
 	const chanAName = chanA.name.toLowerCase();
 	const chanBName = chanB.name.toLowerCase();
 

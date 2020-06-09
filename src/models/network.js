@@ -8,6 +8,7 @@ const Msg = require("./msg");
 const Helper = require("../helper");
 const STSPolicies = require("../plugins/sts");
 const ClientCertificate = require("../plugins/clientCertificate");
+const sortChannels = require("../../client/js/helpers/sortChannels")
 
 module.exports = Network;
 
@@ -401,10 +402,7 @@ Network.prototype.addChannel = function (newChan) {
 			const compareChan = this.channels[i];
 
 			// Negative if the new chan is alphabetically before the next chan in the list, positive if after
-			if (
-				newChan.name.localeCompare(compareChan.name, {sensitivity: "base"}) <= 0 ||
-				(compareChan.type !== Chan.Type.CHANNEL && compareChan.type !== Chan.Type.QUERY)
-			) {
+			if (sortChannels(newChan, compareChan) <= 0) {
 				index = i;
 				break;
 			}
