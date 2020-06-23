@@ -13,15 +13,19 @@ function findCustomLinks(text, detectors = {}) {
 			return
 		}
 
-		const regExp = new RegExp(detector.pattern, "g");
-		let match;
+		try {
+			const regExp = new RegExp(detector.pattern, "g");
+			let match;
 
-		while ((match = regExp.exec(text))) {
-			result.push({
-				start: match.index,
-				end: match.index + match[0].length,
-				link: detector.link.replace("$@", match[0]),
-			});
+			while ((match = regExp.exec(text))) {
+				result.push({
+					start: match.index,
+					end: match.index + match[0].length,
+					link: detector.link.replace("$@", match[0]),
+				});
+			}
+		} catch (e) {
+			// do nothing if it's invalid for now
 		}
 	}
 
