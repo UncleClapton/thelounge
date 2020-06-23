@@ -16,7 +16,7 @@
 			ref="settingsForm"
 			style="flex: initial;"
 			class="colored-nicks container wide"
-			@change="onRulesetChange('nickColorSettings', $event)"
+			@change="onRulesetChange('nickColorRules', $event)"
 			@submit.prevent
 		>
 			<div>
@@ -199,19 +199,18 @@ export default {
 		},
 
 		onRulesetChange(rulesetName, event) {
-			const settingName = event.target.name;
-
+			const {value, name} = event.target;
 			const rId = event.target.getAttribute("data-rId");
 
-			if (!rId) {
-				return;
+			if (rId) {
+				const nextRuleset = {...this.$store.state.settings[rulesetName]};
+
+				nextRuleset[rId][name] = value;
+
+				this.commitChange(rulesetName, nextRuleset);
+			} else {
+				this.commitChange(name, value)
 			}
-
-			const nextRuleset = {...this.$store.state.settings[rulesetName]};
-
-			nextRuleset[rId][settingName] = event.target.value;
-
-			this.commitChange(rulesetName, nextRuleset);
 		},
 
 		commitChange(name, value) {
