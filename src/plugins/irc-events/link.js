@@ -363,7 +363,9 @@ function fetch(uri, headers) {
 				retry: 0,
 				timeout: 5000,
 				headers: getRequestHeaders(headers),
-				rejectUnauthorized: false,
+				https: {
+					rejectUnauthorized: false,
+				},
 			});
 
 			gotStream
