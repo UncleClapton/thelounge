@@ -9,6 +9,10 @@ function findCustomLinks(text, detectors = {}) {
 	}
 
 	for (const detector of Object.values(detectors)) {
+		if (!detector.pattern.trim() || !detector.link.trim()) {
+			return
+		}
+
 		const regExp = new RegExp(detector.pattern, "g");
 		let match;
 
