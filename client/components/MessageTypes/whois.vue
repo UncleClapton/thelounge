@@ -87,6 +87,11 @@
 				<dd>Yes</dd>
 			</template>
 
+			<template v-if="message.whois.certfp">
+				<dt>Certificate:</dt>
+				<dd>{{ message.whois.certfp }}</dd>
+			</template>
+
 			<template v-if="message.whois.server">
 				<dt>Connected to:</dt>
 				<dd>

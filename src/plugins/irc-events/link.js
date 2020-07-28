@@ -93,11 +93,6 @@ function parseHtml(preview, res, client) {
 					$('meta[property="og:description"]').attr("content") ||
 					$('meta[name="description"]').attr("content") ||
 					"";
-				let thumb =
-					$('meta[property="og:image"]').attr("content") ||
-					$('meta[name="twitter:image:src"]').attr("content") ||
-					$('link[rel="image_src"]').attr("href") ||
-					"";
 
 				if (preview.head.length) {
 					preview.head = preview.head.substr(0, 100);
@@ -106,6 +101,17 @@ function parseHtml(preview, res, client) {
 				if (preview.body.length) {
 					preview.body = preview.body.substr(0, 300);
 				}
+
+				if (!Helper.config.prefetchStorage && Helper.config.disableMediaPreview) {
+					resolve(res);
+					return;
+				}
+
+				let thumb =
+					$('meta[property="og:image"]').attr("content") ||
+					$('meta[name="twitter:image:src"]').attr("content") ||
+					$('link[rel="image_src"]').attr("href") ||
+					"";
 
 				// Make sure thumbnail is a valid and absolute url
 				if (thumb.length) {
@@ -136,6 +142,10 @@ function parseHtml(preview, res, client) {
 
 function parseHtmlMedia($, preview, client) {
 	return new Promise((resolve, reject) => {
+		if (Helper.config.disableMediaPreview) {
+			reject();
+		}
+
 		let foundMedia = false;
 
 		["video", "audio"].forEach((type) => {
@@ -212,6 +222,10 @@ function parse(msg, chan, preview, res, client) {
 		case "image/jpg":
 		case "image/jpeg":
 		case "image/webp":
+			if (!Helper.config.prefetchStorage && Helper.config.disableMediaPreview) {
+				return removePreview(msg, preview);
+			}
+
 			if (res.size > Helper.config.prefetchMaxImageSize * 1024) {
 				preview.type = "error";
 				preview.error = "image-too-big";
@@ -237,6 +251,10 @@ function parse(msg, chan, preview, res, client) {
 				break;
 			}
 
+			if (Helper.config.disableMediaPreview) {
+				return removePreview(msg, preview);
+			}
+
 			preview.type = "audio";
 			preview.media = preview.link;
 			preview.mediaType = res.type;
@@ -248,6 +266,10 @@ function parse(msg, chan, preview, res, client) {
 		case "video/mp4":
 			if (!preview.link.startsWith("https://")) {
 				break;
+			}
+
+			if (Helper.config.disableMediaPreview) {
+				return removePreview(msg, preview);
 			}
 
 			preview.type = "video";
