@@ -235,16 +235,34 @@ export function generateUserContextMenu($root, channel, network, user) {
 
 	if (currentChannelUser.mode === "@") {
 		items.push({
-			label: "Kick",
-			type: "item",
-			class: "action-kick",
-			action() {
-				socket.emit("input", {
-					target: channel.id,
-					text: "/kick " + user.nick,
-				});
-			},
-		});
+			type: "divider",
+		},)
+
+		if (user.mode === "+") {
+			items.push({
+				label: "Revoke voice (-v)",
+				type: "item",
+				class: "action-voice",
+				action() {
+					socket.emit("input", {
+						target: channel.id,
+						text: "/devoice " + user.nick,
+					});
+				},
+			});
+		} else {
+			items.push({
+				label: "Give voice (+v)",
+				type: "item",
+				class: "action-voice",
+				action() {
+					socket.emit("input", {
+						target: channel.id,
+						text: "/voice " + user.nick,
+					});
+				},
+			});
+		}
 
 		if (user.mode === "@") {
 			items.push({
@@ -272,31 +290,19 @@ export function generateUserContextMenu($root, channel, network, user) {
 			});
 		}
 
-		if (user.mode === "+") {
-			items.push({
-				label: "Revoke voice (-v)",
+		items.push(
+			{
+				label: "Kick",
 				type: "item",
-				class: "action-voice",
+				class: "action-kick",
 				action() {
 					socket.emit("input", {
 						target: channel.id,
-						text: "/devoice " + user.nick,
+						text: "/kick " + user.nick,
 					});
 				},
-			});
-		} else {
-			items.push({
-				label: "Give voice (+v)",
-				type: "item",
-				class: "action-voice",
-				action() {
-					socket.emit("input", {
-						target: channel.id,
-						text: "/voice " + user.nick,
-					});
-				},
-			});
-		}
+			}
+		);
 	}
 
 	return items;
