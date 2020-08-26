@@ -5,7 +5,6 @@ const got = require("got");
 const URL = require("url").URL;
 const mime = require("mime-types");
 const Helper = require("../../helper");
-const cleanIrcMessage = require("../../../client/js/helpers/ircmessageparser/cleanIrcMessage");
 const { findLinksWithSchema } = require("../../../client/js/helpers/ircmessageparser/findLinks");
 const findCustomLinks = require("../../../client/js/helpers/ircmessageparser/findCustomLinks");
 const storage = require("../storage");
@@ -17,9 +16,6 @@ module.exports = function (client, chan, msg, cleanText) {
 	if (!Helper.config.prefetch) {
 		return;
 	}
-
-	// Remove all IRC formatting characters before searching for links
-	const cleanText = cleanIrcMessage(msg.text);
 
 	let customLinkParts = [];
 
