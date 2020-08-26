@@ -324,9 +324,7 @@
 				<kbd>↓</kbd> keys to highlight an item, and insert it by pressing <kbd>Tab</kbd> or
 				<kbd>Enter</kbd> (or by clicking the desired item).
 			</p>
-			<p>
-				Autocompletion can be disabled in settings.
-			</p>
+			<p>Autocompletion can be disabled in settings.</p>
 
 			<div class="help-item">
 				<div class="subject">
@@ -480,9 +478,7 @@
 					<code>/disconnect [message]</code>
 				</div>
 				<div class="description">
-					<p>
-						Disconnect from the current network with an optionally-provided message.
-					</p>
+					<p>Disconnect from the current network with an optionally-provided message.</p>
 				</div>
 			</div>
 
@@ -616,9 +612,7 @@
 					<code>/op nick [...nick]</code>
 				</div>
 				<div class="description">
-					<p>
-						Give op (<code>+o</code>) to one or several users in the current channel.
-					</p>
+					<p>Give op (<code>+o</code>) to one or several users in the current channel.</p>
 				</div>
 			</div>
 
@@ -662,9 +656,7 @@
 					<code>/quit [message]</code>
 				</div>
 				<div class="description">
-					<p>
-						Disconnect from the current network with an optional message.
-					</p>
+					<p>Disconnect from the current network with an optional message.</p>
 				</div>
 			</div>
 
@@ -739,9 +731,7 @@
 					<code>/whois nick</code>
 				</div>
 				<div class="description">
-					<p>
-						Retrieve information about the given user on the current network.
-					</p>
+					<p>Retrieve information about the given user on the current network.</p>
 				</div>
 			</div>
 		</div>

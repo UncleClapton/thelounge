@@ -6,14 +6,14 @@ const URL = require("url").URL;
 const mime = require("mime-types");
 const Helper = require("../../helper");
 const cleanIrcMessage = require("../../../client/js/helpers/ircmessageparser/cleanIrcMessage");
-const findLinks = require("../../../client/js/helpers/ircmessageparser/findLinks");
+const { findLinksWithSchema } = require("../../../client/js/helpers/ircmessageparser/findLinks");
 const findCustomLinks = require("../../../client/js/helpers/ircmessageparser/findCustomLinks");
 const storage = require("../storage");
 const currentFetchPromises = new Map();
 const imageTypeRegex = /^image\/.+/;
 const mediaTypeRegex = /^(audio|video)\/.+/;
 
-module.exports = function (client, chan, msg) {
+module.exports = function (client, chan, msg, cleanText) {
 	if (!Helper.config.prefetch) {
 		return;
 	}
@@ -27,7 +27,7 @@ module.exports = function (client, chan, msg) {
 		customLinkParts = findCustomLinks(cleanText, client.config.clientSettings.linkDetectors);
 	}
 
-	const parts = [].concat(findLinks(cleanText), customLinkParts);
+	const parts = [].concat(findLinksWithSchema(cleanText), customLinkParts);
 
 	msg.previews = parts.reduce((cleanLinks, link) => {
 		const url = normalizeURL(link.link);
@@ -144,9 +144,23 @@ function parseHtmlMedia($, preview, client) {
 	return new Promise((resolve, reject) => {
 		if (Helper.config.disableMediaPreview) {
 			reject();
+			return;
 		}
 
 		let foundMedia = false;
+		const openGraphType = $('meta[property="og:type"]').attr("content");
+
+		// Certain news websites may include video and audio tags,
+		// despite actually being an article (as indicated by og:type).
+		// If there is og:type tag, we will only select video or audio if it matches
+		if (
+			openGraphType &&
+			!openGraphType.startsWith("video") &&
+			!openGraphType.startsWith("music")
+		) {
+			reject();
+			return;
+		}
 
 		["video", "audio"].forEach((type) => {
 			if (foundMedia) {
@@ -222,6 +236,7 @@ function parse(msg, chan, preview, res, client) {
 		case "image/jpg":
 		case "image/jpeg":
 		case "image/webp":
+		case "image/avif":
 			if (!Helper.config.prefetchStorage && Helper.config.disableMediaPreview) {
 				return removePreview(msg, preview);
 			}

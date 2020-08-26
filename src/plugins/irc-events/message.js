@@ -141,6 +141,9 @@ module.exports = function (irc, network) {
 			msg.showInActive = true;
 		}
 
+		// remove IRC formatting for custom highlight testing
+		const cleanMessage = cleanIrcMessage(data.message);
+
 		// Self messages in channels are never highlighted
 		// Non-self messages are highlighted as soon as the nick is detected
 		if (!msg.highlight && !msg.self) {
@@ -148,8 +151,13 @@ module.exports = function (irc, network) {
 
 			// If we still don't have a highlight, test against custom highlights if there's any
 			if (!msg.highlight && client.highlightRegex) {
-				msg.highlight = client.highlightRegex.test(data.message);
+				msg.highlight = client.highlightRegex.test(cleanMessage);
 			}
+		}
+
+		// if highlight exceptions match, do not highlight at all
+		if (msg.highlight && client.highlightExceptionRegex) {
+			msg.highlight = !client.highlightExceptionRegex.test(cleanMessage);
 		}
 
 		if (data.group) {
@@ -168,7 +176,7 @@ module.exports = function (irc, network) {
 
 		// No prefetch URLs unless are simple MESSAGE or ACTION types
 		if ([Msg.Type.MESSAGE, Msg.Type.ACTION].includes(data.type)) {
-			LinkPrefetch(client, chan, msg);
+			LinkPrefetch(client, chan, msg, cleanMessage);
 		}
 
 		chan.pushMessage(client, msg, !msg.self);
@@ -176,7 +184,7 @@ module.exports = function (irc, network) {
 		// Do not send notifications for messages older than 15 minutes (znc buffer for example)
 		if (msg.highlight && (!data.time || data.time > Date.now() - 900000)) {
 			let title = chan.name;
-			let body = cleanIrcMessage(data.message);
+			let body = cleanMessage;
 
 			if (msg.type === Msg.Type.ACTION) {
 				// For actions, do not include colon in the message
